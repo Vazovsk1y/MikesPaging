@@ -2,7 +2,6 @@
 
 public enum FilteringOperators
 {
-    Unknown,
     NotEqual,
     LessThanOrEqual,
     GreaterThanOrEqual,

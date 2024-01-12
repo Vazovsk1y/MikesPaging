@@ -2,7 +2,6 @@
 
 public enum Logic
 {
-    Unknown,
     And,
     Or,
 }

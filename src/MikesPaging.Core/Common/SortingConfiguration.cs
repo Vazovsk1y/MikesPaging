@@ -11,8 +11,8 @@ public abstract class SortingConfiguration<TSource, T> : ISortingConfiguration<T
 
     protected void RuleFor(T key, Expression<Func<TSource, object>> value)
     {
-        MikesPagingException.ThrowIf(key is null, "Key is required and can't be null.");
-        MikesPagingException.ThrowIf(value is null, "Expression can't be null.");
+        SortingException.ThrowIf(key is null, "Key is required and can't be null.");
+        SortingException.ThrowIf(value is null, "Expression can't be null.");
 
         _sorters[key!] = value!;
     }

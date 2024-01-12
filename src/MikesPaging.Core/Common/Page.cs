@@ -40,10 +40,10 @@ public abstract record Page<TItem> : IPage<TItem>
 
     private static void Validate(IReadOnlyCollection<TItem> items, int totalItemsCount, PagingOptions? pagingOptions)
     {
-        MikesPagingException.ThrowIf(pagingOptions is { PageIndex: <= 0 }, "Page index must be greater than zero.");
-        MikesPagingException.ThrowIf(pagingOptions is { PageSize: <= 0 }, "Page size must be greater than zero.");
-        MikesPagingException.ThrowIf(items.Count > totalItemsCount, "Total items count can't be lower than current items count.");
-        MikesPagingException.ThrowIf(pagingOptions is null && totalItemsCount != items.Count, "If paging options is not passed, total items count must be equal to current items count.");
+        PagingException.ThrowIf(pagingOptions is { PageIndex: <= 0 }, "Page index must be greater than zero.");
+        PagingException.ThrowIf(pagingOptions is { PageSize: <= 0 }, "Page size must be greater than zero.");
+        PagingException.ThrowIf(items.Count > totalItemsCount, "Total items count can't be lower than current items count.");
+        PagingException.ThrowIf(pagingOptions is null && totalItemsCount != items.Count, "If paging options is not passed, total items count must be equal to current items count.");
     }
 }
 

@@ -20,7 +20,7 @@ public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFac
             return source;
         }
 
-        MikesPagingException.ThrowIf(sortingOptions.SortDirection == SortDirections.Unknown, "Undefined sort direction.");
+        SortingException.ThrowIf(sortingOptions.SortDirection == SortDirections.Unknown, "Undefined sort direction.");
 
         using var scope = _serviceScopeFactory.CreateScope();
         var configurationType = typeof(ISortingConfiguration< , >).MakeGenericType(typeof(TSource), typeof(T));
@@ -44,7 +44,7 @@ public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFac
         }
         catch (Exception ex)
         {
-            throw new MikesPagingException(ex.Message);
+            throw new SortingException(ex.Message);
         }
     }
 

@@ -2,7 +2,8 @@
 
 namespace MikesPaging.Core.Common.Interfaces;
 
-public interface ISortingConfiguration<TSource, T> where T : Enum
+public interface ISortingConfiguration<TSource, TSortBy> 
+    where TSortBy : Enum
 {
-    IReadOnlyDictionary<T, Expression<Func<TSource, object>>> Sorters { get; }
+    IReadOnlyDictionary<TSortBy, Expression<Func<TSource, object>>> Sorters { get; }
 }

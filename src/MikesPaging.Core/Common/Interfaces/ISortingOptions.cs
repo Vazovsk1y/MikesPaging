@@ -7,9 +7,10 @@ public interface ISortingOptions
 
 }
 
-public interface ISortingOptions<T> : ISortingOptions where T : Enum
+public interface ISortingOptions<TSortBy> : ISortingOptions 
+    where TSortBy : Enum
 {
     SortDirections SortDirection { get; }
 
-    T SortBy { get; }
+    TSortBy SortBy { get; }
 }

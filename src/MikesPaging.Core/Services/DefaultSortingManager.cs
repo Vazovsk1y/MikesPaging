@@ -11,9 +11,8 @@ public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFac
 {
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 
-    public IQueryable<TSource> ApplySorting<TSorting, T>(IQueryable<TSource> source, TSorting? sortingOptions)
-        where TSorting : class, ISortingOptions<T>
-        where T : Enum
+    public IQueryable<TSource> ApplySorting<TSortBy>(IQueryable<TSource> source, ISortingOptions<TSortBy>? sortingOptions)
+        where TSortBy : Enum
     {
         if (sortingOptions is null)
         {
@@ -23,9 +22,9 @@ public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFac
         SortingException.ThrowIf(sortingOptions.SortDirection == SortDirections.Unknown, "Undefined sort direction.");
 
         using var scope = _serviceScopeFactory.CreateScope();
-        var configurationType = typeof(ISortingConfiguration< , >).MakeGenericType(typeof(TSource), typeof(T));
+        var configurationType = typeof(ISortingConfiguration< , >).MakeGenericType(typeof(TSource), typeof(TSortBy));
         var configuration = scope.ServiceProvider.GetService(configurationType);
-        if (configuration is ISortingConfiguration<TSource, T> castedConfiguration)
+        if (configuration is ISortingConfiguration<TSource, TSortBy> castedConfiguration)
         {
             if (castedConfiguration.Sorters.TryGetValue(sortingOptions.SortBy, out Expression<Func<TSource, object>>? configuredSorter))
             {

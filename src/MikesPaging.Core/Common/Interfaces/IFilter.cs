@@ -6,10 +6,10 @@ public interface IFilter
 {
 
 }
-public interface IFilter<T> : IFilter 
-    where T : Enum
+public interface IFilter<TFilterBy> : IFilter 
+    where TFilterBy : Enum
 {
-    T FilterBy { get; }
+    TFilterBy FilterBy { get; }
 
     FilteringOperators Operator { get; }
 

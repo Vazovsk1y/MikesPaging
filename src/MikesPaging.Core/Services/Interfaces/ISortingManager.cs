@@ -4,7 +4,6 @@ namespace MikesPaging.Core.Services.Interfaces;
 
 public interface ISortingManager<TSource>
 {
-    IQueryable<TSource> ApplySorting<TSorting, T>(IQueryable<TSource> source, TSorting? sortingOptions)
-        where TSorting : class, ISortingOptions<T>
-        where T : Enum;
+    IQueryable<TSource> ApplySorting<TSortBy>(IQueryable<TSource> source, ISortingOptions<TSortBy>? sortingOptions)
+        where TSortBy : Enum;
 }

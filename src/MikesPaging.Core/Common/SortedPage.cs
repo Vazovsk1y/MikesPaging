@@ -1,8 +1,6 @@
-﻿using MikesPaging.Core.Common.Interfaces;
+﻿namespace MikesPaging.Core.Common;
 
-namespace MikesPaging.Core.Common;
-
-public abstract record SortedPage<TItem, TSorting> : Page<TItem>, ISortedPage<TItem, TSorting>
+public abstract record SortedPage<TItem, TSorting> : Page<TItem>
     where TSorting : class, ISortingOptions
 {
     public TSorting? AppliedSorting { get; }

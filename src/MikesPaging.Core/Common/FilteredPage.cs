@@ -1,8 +1,6 @@
-﻿using MikesPaging.Core.Common.Interfaces;
+﻿namespace MikesPaging.Core.Common;
 
-namespace MikesPaging.Core.Common;
-
-public abstract record FilteredPage<TItem, TFiltering> : Page<TItem>, IFilteredPage<TItem, TFiltering>
+public abstract record FilteredPage<TItem, TFiltering> : Page<TItem>
     where TFiltering : class, IFilteringOptions
 {
     public TFiltering? AppliedFiltering { get; }

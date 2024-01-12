@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using MikesPaging.Core.Common;
 using MikesPaging.Core.Common.Enums;
 using MikesPaging.Core.Common.Interfaces;
 using MikesPaging.Core.Exceptions;
@@ -11,7 +12,7 @@ public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFac
 {
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 
-    public IQueryable<TSource> ApplySorting<TSortBy>(IQueryable<TSource> source, ISortingOptions<TSortBy>? sortingOptions)
+    public IQueryable<TSource> ApplySorting<TSortBy>(IQueryable<TSource> source, SortingOptions<TSortBy>? sortingOptions)
         where TSortBy : Enum
     {
         if (sortingOptions is null)

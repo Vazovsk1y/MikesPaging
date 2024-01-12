@@ -43,9 +43,7 @@ public abstract record Page<TItem> : IPage<TItem>
 }
 
 public abstract record Page<TItem, TSorting, TFiltering> : 
-    Page<TItem>, 
-    IFilteredPage<TItem, TFiltering>, 
-    ISortedPage<TItem, TSorting>
+    Page<TItem>
     where TSorting : class, ISortingOptions
     where TFiltering : class, IFilteringOptions
 {

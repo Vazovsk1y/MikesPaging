@@ -12,8 +12,8 @@ public abstract class SortingConfiguration<TSource, TSortBy> : ISortingConfigura
 
     protected void RuleFor(TSortBy key, Expression<Func<TSource, object>> value)
     {
-        SortingException.ThrowIf(key is null, "Key is required and can't be null.");
-        SortingException.ThrowIf(value is null, "Expression can't be null.");
+        SortingException.ThrowIf(key is null, Errors.ValueCannotBeNull("Sort by key value"));
+        SortingException.ThrowIf(value is null, Errors.ValueCannotBeNull("Sorting expression"));
 
         _sorters[key!] = value!;
     }

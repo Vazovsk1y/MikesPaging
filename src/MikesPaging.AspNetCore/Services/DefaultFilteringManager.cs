@@ -4,6 +4,7 @@ using MikesPaging.AspNetCore.Common.Enums;
 using MikesPaging.AspNetCore.Common.Interfaces;
 using MikesPaging.AspNetCore.Exceptions;
 using MikesPaging.AspNetCore.Services.Interfaces;
+using System.ComponentModel;
 using System.Linq.Expressions;
 
 namespace MikesPaging.AspNetCore.Services;
@@ -22,14 +23,21 @@ public class DefaultFilteringManager<TSource>(IServiceScopeFactory serviceScopeF
 
         Validate(filteringOptions);
 
-        Expression<Func<TSource, bool>> compositeFilterExpression = filteringOptions.Logic switch
+        try
         {
-            Logic.And => GetAndFilterExpression(filteringOptions.Filters),
-            Logic.Or => GetOrFilterExpression(filteringOptions.Filters),
-            _ => throw new KeyNotFoundException(),
-        };
+            Expression<Func<TSource, bool>> compositeFilterExpression = filteringOptions.Logic switch
+            {
+                Logic.And => GetAndFilterExpression(filteringOptions.Filters),
+                Logic.Or => GetOrFilterExpression(filteringOptions.Filters),
+                _ => throw new KeyNotFoundException(),
+            };
 
-        return source.Where(compositeFilterExpression);
+            return source.Where(compositeFilterExpression);
+        }
+        catch (Exception ex)
+        {
+            throw new FilteringException(ex.Message, ex);
+        }
     }
 
     private Expression<Func<TSource, bool>> GetAndFilterExpression<T>(IReadOnlyCollection<Filter<T>> filters)
@@ -51,12 +59,7 @@ public class DefaultFilteringManager<TSource>(IServiceScopeFactory serviceScopeF
             }
         }
 
-        if (andExpression is null)
-        {
-            throw new InvalidOperationException("Filters were not applied.");
-        }
-
-        return Expression.Lambda<Func<TSource, bool>>(andExpression, parameter);
+        return Expression.Lambda<Func<TSource, bool>>(andExpression!, parameter);
     }
 
     private Expression<Func<TSource, bool>> GetOrFilterExpression<T>(IReadOnlyCollection<Filter<T>> filters)
@@ -78,12 +81,7 @@ public class DefaultFilteringManager<TSource>(IServiceScopeFactory serviceScopeF
             }
         }
 
-        if (orExpression is null)
-        {
-            throw new InvalidOperationException("Filters were not applied.");
-        }
-
-        return Expression.Lambda<Func<TSource, bool>>(orExpression, parameter);
+        return Expression.Lambda<Func<TSource, bool>>(orExpression!, parameter);
     }
 
     private Expression BuildFilterExpression<T>(Filter<T> filter, ParameterExpression parameter)
@@ -96,20 +94,14 @@ public class DefaultFilteringManager<TSource>(IServiceScopeFactory serviceScopeF
         {
             if (castedConfiguration.Filters.TryGetValue(new FilterKey<T>(filter.FilterBy, filter.Operator), out var configuredFilter))
             {
-                try
-                {
-                    return configuredFilter.Invoke(filter.Value);
-                }
-                catch (Exception ex)
-                {
-                    throw new FilteringException(ex.Message);
-                }
+                return configuredFilter.Invoke(filter.Value) ?? 
+                    throw new ArgumentNullException(Errors.ValueCannotBeNull("Filter expression"));
             }
         }
 
         var property = Expression.Property(parameter, filter.FilterBy.ToString());
-        var convertionResult = Convert.ChangeType(filter.Value, property.Type)
-            ?? throw new FilteringException($"Unable cast [{filter.Value}] to [{property.Type}].");
+        var convertionResult = TypeDescriptor.GetConverter(property.Type).ConvertFromInvariantString(filter.Value) 
+            ?? throw new InvalidCastException($"Unable convert filter value {filter.Value} to {property.Type.Name} property type.");
 
         var constant = Expression.Constant(convertionResult);
         switch (filter.Operator)
@@ -131,21 +123,15 @@ public class DefaultFilteringManager<TSource>(IServiceScopeFactory serviceScopeF
                 var startsWithMethod = typeof(string).GetMethod(nameof(string.StartsWith), [typeof(string)]);
                 return Expression.Call(property, startsWithMethod!, constant);
             default:
-                throw new FilteringException($"Unsupported operator: [{filter.Operator}]."); ;
+                throw new KeyNotFoundException($"Unsupported operator: [{filter.Operator}]."); ;
         }
     }
 
     private static void Validate<T>(FilteringOptions<T> filteringOptions)
         where T : Enum
     {
-        FilteringException.ThrowIf(filteringOptions.Filters.Count == 0, "Filters collection cannot be empty.");
-
-        HashSet<Filter<T>> filters = new(filteringOptions.Filters);
-        FilteringException.ThrowIf(filters.Count != filteringOptions.Filters.Count, "Filters collection contain duplicates.");
-
-        foreach (var item in filteringOptions.Filters)
-        {
-            FilteringException.ThrowIf(item.Value is null, "Filter value cannot be null.");
-        }
+        FilteringException.ThrowIf(filteringOptions.Filters is null || filteringOptions.Filters.Count == 0, Errors.ValueCannotBeNullOrEmpty("Filters collection"));
+        FilteringException.ThrowIf(new HashSet<Filter<T>>(filteringOptions.Filters!).Count != filteringOptions.Filters!.Count, Errors.Filtering.FiltersCollectionCannotContainDuplicates);
+        FilteringException.ThrowIf(filteringOptions.Filters.Any(e => e.Value is null), Errors.ValueCannotBeNull("Filter value"));
     }
 }

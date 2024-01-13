@@ -26,25 +26,24 @@ public static class Mapper
     {
         if (string.IsNullOrWhiteSpace(sortingOptionsModel.SortBy))
         {
-            return MappingResult<SortingOptions<TSortBy>>.Failure("SortBy cannot be null or empty.");
+            return MappingResult<SortingOptions<TSortBy>>.Failure(Errors.ValueCannotBeNullOrEmpty("Sort by property"));
         }
 
         if (string.IsNullOrWhiteSpace(sortingOptionsModel.SortDirection))
         {
-            return MappingResult<SortingOptions<TSortBy>>.Failure("SortDirection cannot be null or empty.");
+            return MappingResult<SortingOptions<TSortBy>>.Failure(Errors.ValueCannotBeNullOrEmpty("Sort direction"));
         }
 
         var sortDirectionParsingRes = Enum.TryParse<SortDirections>(sortingOptionsModel.SortDirection, true, out var sortDirection);
-        var sortByParsingRes = Enum.TryParse(typeof(TSortBy), sortingOptionsModel.SortBy, true, out var sortBy);
-
         if (!sortDirectionParsingRes)
         {
-            return MappingResult<SortingOptions<TSortBy>>.Failure($"Invalid SortDirection value: {sortingOptionsModel.SortDirection}.");
+            return MappingResult<SortingOptions<TSortBy>>.Failure(Errors.InvalidStringValue("sort direction", sortingOptionsModel.SortDirection));
         }
 
+        var sortByParsingRes = Enum.TryParse(typeof(TSortBy), sortingOptionsModel.SortBy, true, out var sortBy);
         if (!sortByParsingRes)
         {
-            return MappingResult<SortingOptions<TSortBy>>.Failure($"Invalid SortBy value: {sortingOptionsModel.SortBy}.");
+            return MappingResult<SortingOptions<TSortBy>>.Failure(Errors.InvalidStringValue("sort by", sortingOptionsModel.SortBy));
         }
 
         return new SortingOptions<TSortBy>(sortDirection, (TSortBy)sortBy!);
@@ -55,51 +54,60 @@ public static class Mapper
     {
         if (string.IsNullOrWhiteSpace(filteringOptionsModel.Logic))
         {
-            return MappingResult<FilteringOptions<TFilterBy>>.Failure("Logic cannot be null or empty.");
+            return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.ValueCannotBeNullOrEmpty("Logic property"));
         }
 
-        if (filteringOptionsModel.Filters.Count == 0)
+        if (filteringOptionsModel.Filters is null || filteringOptionsModel.Filters.Count == 0)
         {
-            return MappingResult<FilteringOptions<TFilterBy>>.Failure("Filters collection cannot be empty.");
+            return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.ValueCannotBeNullOrEmpty("Filters collection"));
         }
 
         var logicParsingRes = Enum.TryParse<Logic>(filteringOptionsModel.Logic, true, out var logic);
         if (!logicParsingRes)
         {
-            return MappingResult<FilteringOptions<TFilterBy>>.Failure($"Invalid logic value: {filteringOptionsModel.Logic}.");
+            return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.InvalidStringValue("logic", filteringOptionsModel.Logic));
         }
 
         if (new HashSet<FilterModel>(filteringOptionsModel.Filters).Count != filteringOptionsModel.Filters.Count)
         {
-            return MappingResult<FilteringOptions<TFilterBy>>.Failure($"Filters collection contain duplicates.");
+            return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.Filtering.FiltersCollectionCannotContainDuplicates);
         }
 
-        var filters = new List<Filter<TFilterBy>>();
-        foreach (var item in filteringOptionsModel.Filters)
+        var filtersRes = ToFilters<TFilterBy>(filteringOptionsModel.Filters);
+        return filtersRes.IsFailure ?
+            MappingResult<FilteringOptions<TFilterBy>>.Failure(filtersRes.ErrorMessage)
+            :
+            new FilteringOptions<TFilterBy>(filtersRes.Value, logic);
+    }
+
+    private static MappingResult<IReadOnlyCollection<Filter<T>>> ToFilters<T>(IEnumerable<FilterModel> filtersModels)
+        where T : Enum
+    {
+        var result = new List<Filter<T>>();
+        foreach (var item in filtersModels)
         {
             if (item.Value is null)
             {
-                return MappingResult<FilteringOptions<TFilterBy>>.Failure("Value cannot be null.");
+                return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.ValueCannotBeNull("Filter value"));
             }
 
-            var filterByParsingRes = Enum.TryParse(typeof(TFilterBy), item.FilterBy, true, out var filterBy);
-            var operatorParsingRes = Enum.TryParse<FilteringOperators>(item.Operator, true, out var @operator);
-
+            var filterByParsingRes = Enum.TryParse(typeof(T), item.FilterBy, true, out var filterBy);
             if (!filterByParsingRes)
             {
-                return MappingResult<FilteringOptions<TFilterBy>>.Failure($"Invalid FilterBy value: {item.FilterBy}.");
+                return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.InvalidStringValue("filter by", item.FilterBy));
             }
 
+            var operatorParsingRes = Enum.TryParse<FilteringOperators>(item.Operator, true, out var @operator);
             if (!operatorParsingRes)
             {
-                return MappingResult<FilteringOptions<TFilterBy>>.Failure($"Invalid Operator value: {item.Operator}.");
+                return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.InvalidStringValue("filtering operator", item.Operator));
             }
 
-            var filter = new Filter<TFilterBy>((TFilterBy)filterBy!, @operator, item.Value);
-            filters.Add(filter);
+            var filter = new Filter<T>((T)filterBy!, @operator, item.Value);
+            result.Add(filter);
         }
 
-        return new FilteringOptions<TFilterBy>(filters, logic);
+        return result;
     }
 }
 

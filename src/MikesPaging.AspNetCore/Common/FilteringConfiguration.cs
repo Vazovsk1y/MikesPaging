@@ -11,9 +11,10 @@ public abstract class FilteringConfiguration<TSource, TFilterBy> : IFilteringCon
     private readonly Dictionary<FilterKey<TFilterBy>, Func<string, Expression<Func<TSource, bool>>>> _filters = [];
     public IReadOnlyDictionary<FilterKey<TFilterBy>, Func<string, Expression<Func<TSource, bool>>>> Filters => _filters.AsReadOnly();
 
-    protected void RuleFor(TFilterBy filterBy, FilteringOperators @operator, Func<string, Expression<Func<TSource, bool>>> filter)
+    protected void RuleFor(TFilterBy filterBy, FilteringOperators @operator, Func<string, Expression<Func<TSource, bool>>> value)
     {
-        FilteringException.ThrowIf(filter is null, "Filter func is required and cannot be null.");
-        _filters[new FilterKey<TFilterBy>(filterBy, @operator)] = filter!;
+        FilteringException.ThrowIf(filterBy is null, Errors.ValueCannotBeNull("Filter by"));
+        FilteringException.ThrowIf(value is null, Errors.ValueCannotBeNull("Filtering delegate"));
+        _filters[new FilterKey<TFilterBy>(filterBy!, @operator)] = value!;
     }
 }

@@ -49,6 +49,58 @@ public static class Mapper
 
         return new SortingOptions<TSortBy>(sortDirection, (TSortBy)sortBy!);
     }
+
+    public static MappingResult<FilteringOptions<TFilterBy>> ToOptions<TFilterBy>(this FilteringOptionsModel filteringOptionsModel)
+             where TFilterBy : Enum
+    {
+        if (string.IsNullOrWhiteSpace(filteringOptionsModel.Logic))
+        {
+            return MappingResult<FilteringOptions<TFilterBy>>.Failure("Logic cannot be null or empty.");
+        }
+
+        if (filteringOptionsModel.Filters.Count == 0)
+        {
+            return MappingResult<FilteringOptions<TFilterBy>>.Failure("Filters collection cannot be empty.");
+        }
+
+        var logicParsingRes = Enum.TryParse<Logic>(filteringOptionsModel.Logic, true, out var logic);
+        if (!logicParsingRes)
+        {
+            return MappingResult<FilteringOptions<TFilterBy>>.Failure($"Invalid logic value: {filteringOptionsModel.Logic}.");
+        }
+
+        if (new HashSet<FilterModel>(filteringOptionsModel.Filters).Count != filteringOptionsModel.Filters.Count)
+        {
+            return MappingResult<FilteringOptions<TFilterBy>>.Failure($"Filters collection contain duplicates.");
+        }
+
+        var filters = new List<Filter<TFilterBy>>();
+        foreach (var item in filteringOptionsModel.Filters)
+        {
+            if (item.Value is null)
+            {
+                return MappingResult<FilteringOptions<TFilterBy>>.Failure("Value cannot be null.");
+            }
+
+            var filterByParsingRes = Enum.TryParse(typeof(TFilterBy), item.FilterBy, true, out var filterBy);
+            var operatorParsingRes = Enum.TryParse<FilteringOperators>(item.Operator, true, out var @operator);
+
+            if (!filterByParsingRes)
+            {
+                return MappingResult<FilteringOptions<TFilterBy>>.Failure($"Invalid FilterBy value: {item.FilterBy}.");
+            }
+
+            if (!operatorParsingRes)
+            {
+                return MappingResult<FilteringOptions<TFilterBy>>.Failure($"Invalid Operator value: {item.Operator}.");
+            }
+
+            var filter = new Filter<TFilterBy>((TFilterBy)filterBy!, @operator, item.Value);
+            filters.Add(filter);
+        }
+
+        return new FilteringOptions<TFilterBy>(filters, logic);
+    }
 }
 
 public record MappingResult<T>

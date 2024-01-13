@@ -22,6 +22,12 @@ public static class Registrator
         return services;
     }
 
+    public static IServiceCollection AddFiltering(this IServiceCollection services)
+    {
+        services.TryAddScoped(typeof(IFilteringManager<>), typeof(DefaultFilteringManager<>));
+        return services;
+    }
+
     public static IServiceCollection AddSortingConfigurationsFromAssembly(this IServiceCollection services, Assembly assembly) 
     {
         var configurationTypes = assembly
@@ -35,6 +41,24 @@ public static class Registrator
             var genericArguments = configurationType.BaseType!.GetGenericArguments();
             var interfaceType = typeof(ISortingConfiguration< , >).MakeGenericType(genericArguments);
             services.TryAddScoped(interfaceType, configurationType);
+        }
+
+        return services;
+    }
+
+    public static IServiceCollection AddFilteringConfigurationsFromAssembly(this IServiceCollection services, Assembly assembly)
+    {
+        var configurationTypes = assembly
+            .GetTypes()
+            .Where(type =>
+                !type.IsAbstract && type.BaseType?.IsGenericType == true && type.BaseType?.GetGenericTypeDefinition() == typeof(FilteringConfiguration< , >))
+            .ToList();
+
+        foreach (var filteringConfiguration in configurationTypes)
+        {
+            var genericArguments = filteringConfiguration.BaseType!.GetGenericArguments();
+            var interfaceType = typeof(IFilteringConfiguration< , >).MakeGenericType(genericArguments);
+            services.TryAddScoped(interfaceType, filteringConfiguration);
         }
 
         return services;

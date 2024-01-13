@@ -13,8 +13,8 @@ public class DefaultPagingManager<TSource> : IPagingManager<TSource>
             return source;
         }
 
-        PagingException.ThrowIf(pagingOptions is { PageIndex: <= 0 }, "Page index must be greater than zero.");
-        PagingException.ThrowIf(pagingOptions is { PageSize: <= 0 }, "Page size must be greater than zero.");
+        PagingException.ThrowIf(pagingOptions is { PageIndex: <= 0 }, Errors.Paging.PageIndexMustBeGreaterThanZero);
+        PagingException.ThrowIf(pagingOptions is { PageSize: <= 0 }, Errors.Paging.PageSizeMustBeGreaterThanZero);
 
         return source
            .Skip((pagingOptions.PageIndex - 1) * pagingOptions.PageSize)

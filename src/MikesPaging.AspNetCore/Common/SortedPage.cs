@@ -9,7 +9,7 @@ public abstract record SortedPage<TItem, TSorting> : Page<TItem>
         IReadOnlyCollection<TItem> items,
         int totalItemsCount,
         TSorting? sortingOptions,
-        PagingOptions? pagingOptions = null)
+        PagingOptions? pagingOptions)
         : base(items, totalItemsCount, pagingOptions)
     {
         AppliedSorting = sortingOptions;

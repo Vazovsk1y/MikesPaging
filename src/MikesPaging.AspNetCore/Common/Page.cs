@@ -18,27 +18,23 @@ public abstract record Page<TItem> : IPage<TItem>
 
     public bool HasPreviousPage => PageIndex > StartCountingFrom;
 
-    protected Page(IReadOnlyCollection<TItem> items, int totalItemsCount, PagingOptions? pagingOptions = null)
+    protected Page(
+        IReadOnlyCollection<TItem> items, 
+        int totalItemsCount, 
+        PagingOptions? pagingOptions)
     {
-        PagingException.ThrowIf(pagingOptions is { PageIndex: <= 0 }, "Page index must be greater than zero.");
-        PagingException.ThrowIf(pagingOptions is { PageSize: <= 0 }, "Page size must be greater than zero.");
-        PagingException.ThrowIf(items.Count > totalItemsCount, "Total items count can't be lower than current items count.");
-        PagingException.ThrowIf(pagingOptions is null && totalItemsCount != items.Count, "If paging options is not passed, total items count must be equal to current items count.");
+        PagingException.ThrowIf(pagingOptions is { PageIndex: <= 0 }, Errors.Paging.PageIndexMustBeGreaterThanZero);
+        PagingException.ThrowIf(pagingOptions is { PageSize: <= 0 }, Errors.Paging.PageSizeMustBeGreaterThanZero);
+        PagingException.ThrowIf(items.Count > totalItemsCount, Errors.Paging.TotalItemsCountCannotBeLowerThanCurrentItemsCount);
+        PagingException.ThrowIf(pagingOptions is null && totalItemsCount != items.Count, Errors.Paging.TotalItemsCountMustBeEqualToCurrentItemsCount);
 
         Items = items;
         TotalItemsCount = totalItemsCount;
         PageIndex = pagingOptions is null ? StartCountingFrom : pagingOptions.PageIndex;
-        TotalPagesCount = CalculateTotalPages(pagingOptions, totalItemsCount);
-    }
-
-    private static int CalculateTotalPages(PagingOptions? pagingOptions, int totalItemsCount)
-    {
-        if (pagingOptions is null)
-        {
-            return StartCountingFrom;
-        }
-
-        return totalItemsCount < pagingOptions.PageSize ? StartCountingFrom : (int)Math.Ceiling(totalItemsCount / (double)pagingOptions.PageSize);
+        TotalPagesCount = pagingOptions is null || pagingOptions is not null && totalItemsCount <= pagingOptions.PageSize ?
+            StartCountingFrom 
+            : 
+            (int)Math.Ceiling(totalItemsCount / (double)pagingOptions!.PageSize);
     }
 }
 
@@ -56,7 +52,7 @@ public abstract record Page<TItem, TSorting, TFiltering> :
         int totalItemsCount,
         TSorting? sortingOptions,
         TFiltering? filteringOptions,
-        PagingOptions? pagingOptions = null)
+        PagingOptions? pagingOptions)
         : base(items, totalItemsCount, pagingOptions)
     {
         AppliedSorting = sortingOptions;

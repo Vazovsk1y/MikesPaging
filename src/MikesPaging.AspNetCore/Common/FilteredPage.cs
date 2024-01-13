@@ -9,7 +9,7 @@ public abstract record FilteredPage<TItem, TFiltering> : Page<TItem>
         IReadOnlyCollection<TItem> items,
         int totalItemsCount,
         TFiltering? filteringOptions,
-        PagingOptions? pagingOptions = null)
+        PagingOptions? pagingOptions)
         : base(items, totalItemsCount, pagingOptions)
     {
         AppliedFiltering = filteringOptions;

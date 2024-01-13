@@ -23,16 +23,17 @@ public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFac
         using var scope = _serviceScopeFactory.CreateScope();
         var configurationType = typeof(ISortingConfiguration< , >).MakeGenericType(typeof(TSource), typeof(TSortBy));
         var configuration = scope.ServiceProvider.GetService(configurationType);
-        if (configuration is ISortingConfiguration<TSource, TSortBy> castedConfiguration)
-        {
-            if (castedConfiguration.Sorters.TryGetValue(sortingOptions.SortBy, out Expression<Func<TSource, object>>? configuredSorter))
-            {
-                return Sort(source, sortingOptions.SortDirection, configuredSorter);
-            }
-        }
 
         try
         {
+            if (configuration is ISortingConfiguration<TSource, TSortBy> castedConfiguration)
+            {
+                if (castedConfiguration.Sorters.TryGetValue(sortingOptions.SortBy, out var configuredSorter))
+                {
+                    return Sort(source, sortingOptions.SortDirection, configuredSorter);
+                }
+            }
+
             var parameter = Expression.Parameter(typeof(TSource), "x");
             var property = Expression.Property(parameter, sortingOptions.SortBy.ToString());
             var conversion = Expression.Convert(property, typeof(object));
@@ -43,7 +44,7 @@ public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFac
         }
         catch (Exception ex)
         {
-            throw new SortingException(ex.Message);
+            throw new SortingException(ex.Message, ex);
         }
     }
 

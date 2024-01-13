@@ -2,13 +2,29 @@
 
 namespace MikesPaging.AspNetCore.Exceptions;
 
-public class FilteringException(string? message) : MikesPagingException(message)
+public class FilteringException : MikesPagingException
 {
-    public static void ThrowIf(bool condition, string? message)
+    internal FilteringException(string? message) : base(message)
+    {
+    }
+
+    internal FilteringException(string? message, Exception? inner) : base(message, inner)
+    {
+
+    }
+    internal static void ThrowIf(bool condition, string? message)
     {
         if (condition)
         {
             throw new FilteringException(message);
+        }
+    }
+
+    internal static void ThrowIf(bool condition, string? message, Exception? inner)
+    {
+        if (condition)
+        {
+            throw new FilteringException(message, inner);
         }
     }
 }

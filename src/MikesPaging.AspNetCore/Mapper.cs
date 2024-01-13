@@ -10,12 +10,12 @@ public static class Mapper
     {
         if (pagingOptionsModel.PageIndex <= 0)
         {
-            return MappingResult<PagingOptions>.Failure("PageIndex must be greater than zero.");
+            return MappingResult<PagingOptions>.Failure(Errors.Paging.PageIndexMustBeGreaterThanZero);
         }
 
         if (pagingOptionsModel.PageSize <= 0)
         {
-            return MappingResult<PagingOptions>.Failure("PageSize must be greater than zero.");
+            return MappingResult<PagingOptions>.Failure(Errors.Paging.PageSizeMustBeGreaterThanZero);
         }
 
         return new PagingOptions(pagingOptionsModel.PageIndex, pagingOptionsModel.PageSize);
@@ -142,9 +142,9 @@ public record MappingResult<T>
         ErrorMessage = errorMessage;
     }
 
-    public static MappingResult<T> Success(T value) => new(true, value, string.Empty);
+    internal static MappingResult<T> Success(T value) => new(true, value, string.Empty);
 
-    public static MappingResult<T> Failure(string errorMessage) => new(false, default, errorMessage);
+    internal static MappingResult<T> Failure(string errorMessage) => new(false, default, errorMessage);
 
     public static implicit  operator MappingResult<T>(T value) => Success(value);
 }

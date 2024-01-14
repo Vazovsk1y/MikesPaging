@@ -2,7 +2,7 @@
 
 namespace MikesPaging.WebApi.Models;
 
-public sealed class UsersSortingProperties : MikesPagingEnum
+public sealed class UsersSortingProperties : SortingEnum
 {
     public static readonly UsersSortingProperties ByFullName = new(nameof(User.FullName), [nameof(User.FullName), "user_fullname"]);
 

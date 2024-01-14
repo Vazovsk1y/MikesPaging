@@ -8,4 +8,4 @@ public record Filter<TFilterBy>(
     [property: JsonConverter(typeof(JsonStringEnumConverter))]
     FilteringOperators Operator, 
     string Value)
-    where TFilterBy : MikesPagingEnum;
+    where TFilterBy : FilteringEnum;

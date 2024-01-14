@@ -11,7 +11,9 @@ public abstract class MikesPagingEnum
 
     private readonly bool _ignoreCase = true;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private MikesPagingEnum() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     protected MikesPagingEnum(string propertyName, IReadOnlyCollection<string> allowedNames, bool ignoreCase = true) 
     {

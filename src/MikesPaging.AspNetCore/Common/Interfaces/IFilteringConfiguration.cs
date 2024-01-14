@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 namespace MikesPaging.AspNetCore.Common.Interfaces;
 
 public interface IFilteringConfiguration<TSource, TFilterBy>
-    where TFilterBy : MikesPagingEnum
+    where TFilterBy : FilteringEnum
 {
     IReadOnlyDictionary<FilterKey<TFilterBy>, Func<string, Expression<Func<TSource, bool>>>> Filters { get; }
 }

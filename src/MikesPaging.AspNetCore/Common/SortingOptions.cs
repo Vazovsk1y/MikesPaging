@@ -8,4 +8,4 @@ public record SortingOptions<TSortBy>(
     [property: JsonConverter(typeof(JsonStringEnumConverter))] 
     SortDirections SortDirection, 
     TSortBy SortBy) : ISortingOptions
-    where TSortBy : MikesPagingEnum;
+    where TSortBy : SortingEnum;

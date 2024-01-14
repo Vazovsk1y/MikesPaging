@@ -3,7 +3,7 @@
 namespace MikesPaging.AspNetCore.Common.Interfaces;
 
 public interface ISortingConfiguration<TSource, TSortBy> 
-    where TSortBy : MikesPagingEnum
+    where TSortBy : SortingEnum
 {
     IReadOnlyDictionary<TSortBy, Expression<Func<TSource, object>>> Sorters { get; }
 }

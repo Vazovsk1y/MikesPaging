@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 namespace MikesPaging.AspNetCore.Common;
 
 public abstract class FilteringConfiguration<TSource, TFilterBy> : IFilteringConfiguration<TSource, TFilterBy> 
-    where TFilterBy : MikesPagingEnum
+    where TFilterBy : FilteringEnum
 {
     private readonly Dictionary<FilterKey<TFilterBy>, Func<string, Expression<Func<TSource, bool>>>> _filters = [];
     public IReadOnlyDictionary<FilterKey<TFilterBy>, Func<string, Expression<Func<TSource, bool>>>> Filters => _filters.AsReadOnly();

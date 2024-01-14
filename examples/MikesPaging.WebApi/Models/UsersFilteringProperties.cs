@@ -2,7 +2,7 @@
 
 namespace MikesPaging.WebApi.Models;
 
-public sealed class UsersFilteringProperties : MikesPagingEnum
+public sealed class UsersFilteringProperties : FilteringEnum
 {
     public static readonly UsersFilteringProperties ByFullName = new(nameof(User.FullName), [nameof(User.FullName), "user_fullname" ]);
 

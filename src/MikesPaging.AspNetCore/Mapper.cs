@@ -22,7 +22,7 @@ public static class Mapper
     }
 
     public static MappingResult<SortingOptions<TSortBy>> ToOptions<TSortBy>(this SortingOptionsModel sortingOptionsModel)
-             where TSortBy : MikesPagingEnum
+             where TSortBy : SortingEnum
     {
         if (string.IsNullOrWhiteSpace(sortingOptionsModel.SortBy))
         {
@@ -50,7 +50,7 @@ public static class Mapper
     }
 
     public static MappingResult<FilteringOptions<TFilterBy>> ToOptions<TFilterBy>(this FilteringOptionsModel filteringOptionsModel)
-             where TFilterBy : MikesPagingEnum
+             where TFilterBy : FilteringEnum
     {
         if (string.IsNullOrWhiteSpace(filteringOptionsModel.Logic))
         {
@@ -86,7 +86,7 @@ public static class Mapper
     }
 
     private static MappingResult<IReadOnlyCollection<Filter<T>>> ToFilters<T>(IEnumerable<FilterModel> filtersModels)
-        where T : MikesPagingEnum
+        where T : FilteringEnum
     {
         var result = new List<Filter<T>>();
         foreach (var item in filtersModels)

@@ -13,12 +13,14 @@ public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFac
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 
     public IQueryable<TSource> ApplySorting<TSortBy>(IQueryable<TSource> source, SortingOptions<TSortBy>? sortingOptions)
-        where TSortBy : MikesPagingEnum
+        where TSortBy : SortingEnum
     {
         if (sortingOptions is null)
         {
             return source;
         }
+
+        Validate(sortingOptions);
 
         using var scope = _serviceScopeFactory.CreateScope();
         var configurationType = typeof(ISortingConfiguration< , >).MakeGenericType(typeof(TSource), typeof(TSortBy));
@@ -51,5 +53,11 @@ public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFac
     private static IOrderedQueryable<TSource> Sort<TBy>(IQueryable<TSource> collection, SortDirections sortDirection, Expression<Func<TSource, TBy>> expression)
     {
         return sortDirection == SortDirections.Ascending ? collection.OrderBy(expression) : collection.OrderByDescending(expression);
+    }
+
+    private static void Validate<T>(SortingOptions<T> sortingOptions)
+        where T : SortingEnum
+    {
+        SortingException.ThrowIf(sortingOptions.SortBy is null, Errors.ValueCannotBeNull("Sort by"));
     }
 }

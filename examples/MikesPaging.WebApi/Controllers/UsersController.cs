@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MikesPaging.AspNetCore;
-using MikesPaging.AspNetCore.Common;
 using MikesPaging.AspNetCore.Common.ViewModels;
 using MikesPaging.AspNetCore.Services.Interfaces;
 using MikesPaging.WebApi.Data;
@@ -21,50 +20,29 @@ public class UsersController(
     [HttpPost]
     public IActionResult GetAsync(ReceivingModel receivingModel)
     {
-        PagingOptions? pagingOptions = null;
-        if (receivingModel.PagingOptions is { })
+        var pagingOptionsRes = receivingModel.PagingOptions.ToOptions();
+        if (pagingOptionsRes.IsFailure)
         {
-            var pagingOptionsRes = receivingModel.PagingOptions.ToOptions();
-            if (pagingOptionsRes.IsFailure)
-            {
-                return BadRequest(pagingOptionsRes.ErrorMessage);
-            }
-            else
-            {
-                pagingOptions = pagingOptionsRes.Value;
-            }
+            return BadRequest(pagingOptionsRes.ErrorMessage);
         }
 
-        SortingOptions<UsersSortingProperties>? sortingOptions = null;
-        if (receivingModel.SortingOptions is { })
+        var sortingOptionsRes = receivingModel.SortingOptions.ToOptions<UsersSortingProperties>();
+        if (sortingOptionsRes.IsFailure)
         {
-            var sortingOptionsRes = receivingModel.SortingOptions.ToOptions<UsersSortingProperties>();
-            if (sortingOptionsRes.IsFailure)
-            {
-                return BadRequest(sortingOptionsRes.ErrorMessage);
-            }
-            else
-            {
-                sortingOptions = sortingOptionsRes.Value;
-            }
+            return BadRequest(sortingOptionsRes.ErrorMessage);
         }
 
-        FilteringOptions<UsersFilteringProperties>? filteringOptions = null;
-        if (receivingModel.FilteringOptions is { })
+        var filteringOptionsRes = receivingModel.FilteringOptions.ToOptions<UsersFilteringProperties>();
+        if (filteringOptionsRes.IsFailure)
         {
-            var filteringOptionsRes = receivingModel.FilteringOptions.ToOptions<UsersFilteringProperties>();
-            if (filteringOptionsRes.IsFailure)
-            {
-                return BadRequest(filteringOptionsRes.ErrorMessage);
-            }
-            else
-            {
-                filteringOptions = filteringOptionsRes.Value;
-            }
+            return BadRequest(filteringOptionsRes.ErrorMessage);
         }
+
+        var pagingOptions = pagingOptionsRes.Value;
+        var sortingOptions = sortingOptionsRes.Value;
+        var filteringOptions = filteringOptionsRes.Value;
 
         var totalUsersCount = filteringManager.ApplyFiltering(dbContext.Users, filteringOptions).Count();
-
         var result = dbContext
             .Users
             .Include(e => e.Accounts)

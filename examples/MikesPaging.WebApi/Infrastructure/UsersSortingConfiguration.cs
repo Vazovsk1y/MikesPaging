@@ -7,6 +7,6 @@ public class UsersSortingConfiguration : SortingConfiguration<User, UsersSorting
 {
     public UsersSortingConfiguration()
     {
-        RuleFor(UsersSortingProperties.AccountsCount, e => e.Accounts.Count);
+        RuleFor(UsersSortingProperties.ByAccountsCount, e => e.Accounts.Count);
     }
 }

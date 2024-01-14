@@ -8,7 +8,7 @@ public class UsersFilteringConfiguration : FilteringConfiguration<User, UsersFil
 {
     public UsersFilteringConfiguration()
     {
-        RuleFor(UsersFilteringProperties.Accounts, FilteringOperators.Contains, filterValue =>
+        RuleFor(UsersFilteringProperties.ByAccounts, FilteringOperators.Contains, filterValue =>
         {
             if (!Guid.TryParse(filterValue, out var accountId))
             {

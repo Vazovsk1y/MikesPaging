@@ -12,7 +12,7 @@ public class SortingException : MikesPagingException
     {
 
     }
-    internal static void ThrowIf(bool condition, string? message)
+    internal new static void ThrowIf(bool condition, string? message)
     {
         if (condition)
         {
@@ -20,7 +20,7 @@ public class SortingException : MikesPagingException
         }
     }
 
-    internal static void ThrowIf(bool condition, string? message, Exception? inner)
+    internal new static void ThrowIf(bool condition, string? message, Exception? inner)
     {
         if (condition)
         {

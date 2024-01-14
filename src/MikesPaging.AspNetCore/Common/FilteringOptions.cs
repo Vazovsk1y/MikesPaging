@@ -8,4 +8,4 @@ public record FilteringOptions<TFilterBy>(
     IReadOnlyCollection<Filter<TFilterBy>> Filters,
     [property: JsonConverter(typeof(JsonStringEnumConverter))]
     Logic Logic) : IFilteringOptions
-    where TFilterBy : Enum;
+    where TFilterBy : MikesPagingEnum;

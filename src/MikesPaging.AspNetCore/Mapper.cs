@@ -22,7 +22,7 @@ public static class Mapper
     }
 
     public static MappingResult<SortingOptions<TSortBy>> ToOptions<TSortBy>(this SortingOptionsModel sortingOptionsModel)
-             where TSortBy : Enum
+             where TSortBy : MikesPagingEnum
     {
         if (string.IsNullOrWhiteSpace(sortingOptionsModel.SortBy))
         {
@@ -40,17 +40,17 @@ public static class Mapper
             return MappingResult<SortingOptions<TSortBy>>.Failure(Errors.InvalidStringValue("sort direction", sortingOptionsModel.SortDirection));
         }
 
-        var sortByParsingRes = Enum.TryParse(typeof(TSortBy), sortingOptionsModel.SortBy, true, out var sortBy);
-        if (!sortByParsingRes)
+        var sortBy = MikesPagingEnum.Find<TSortBy>(sortingOptionsModel.SortBy);
+        if (sortBy is null)
         {
             return MappingResult<SortingOptions<TSortBy>>.Failure(Errors.InvalidStringValue("sort by", sortingOptionsModel.SortBy));
         }
 
-        return new SortingOptions<TSortBy>(sortDirection, (TSortBy)sortBy!);
+        return new SortingOptions<TSortBy>(sortDirection, sortBy);
     }
 
     public static MappingResult<FilteringOptions<TFilterBy>> ToOptions<TFilterBy>(this FilteringOptionsModel filteringOptionsModel)
-             where TFilterBy : Enum
+             where TFilterBy : MikesPagingEnum
     {
         if (string.IsNullOrWhiteSpace(filteringOptionsModel.Logic))
         {
@@ -60,6 +60,11 @@ public static class Mapper
         if (filteringOptionsModel.Filters is null || filteringOptionsModel.Filters.Count == 0)
         {
             return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.ValueCannotBeNullOrEmpty("Filters collection"));
+        }
+
+        if (filteringOptionsModel.Filters.Any(e => e.Value is null))
+        {
+            return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.ValueCannotBeNull("Filter value"));
         }
 
         var logicParsingRes = Enum.TryParse<Logic>(filteringOptionsModel.Logic, true, out var logic);
@@ -81,7 +86,7 @@ public static class Mapper
     }
 
     private static MappingResult<IReadOnlyCollection<Filter<T>>> ToFilters<T>(IEnumerable<FilterModel> filtersModels)
-        where T : Enum
+        where T : MikesPagingEnum
     {
         var result = new List<Filter<T>>();
         foreach (var item in filtersModels)
@@ -91,8 +96,8 @@ public static class Mapper
                 return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.ValueCannotBeNull("Filter value"));
             }
 
-            var filterByParsingRes = Enum.TryParse(typeof(T), item.FilterBy, true, out var filterBy);
-            if (!filterByParsingRes)
+            var filterBy = MikesPagingEnum.Find<T>(item.FilterBy);
+            if (filterBy is null)
             {
                 return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.InvalidStringValue("filter by", item.FilterBy));
             }
@@ -103,7 +108,7 @@ public static class Mapper
                 return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.InvalidStringValue("filtering operator", item.Operator));
             }
 
-            var filter = new Filter<T>((T)filterBy!, @operator, item.Value);
+            var filter = new Filter<T>(filterBy, @operator, item.Value);
             result.Add(filter);
         }
 

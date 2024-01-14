@@ -4,7 +4,7 @@ using MikesPaging.AspNetCore.Services.Interfaces;
 
 namespace MikesPaging.AspNetCore.Services;
 
-public class DefaultPagingManager<TSource> : IPagingManager<TSource>
+public sealed class DefaultPagingManager<TSource> : IPagingManager<TSource>
 {
     public IQueryable<TSource> ApplyPaging(IQueryable<TSource> source, PagingOptions? pagingOptions)
     {

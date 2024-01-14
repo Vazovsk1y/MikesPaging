@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 namespace MikesPaging.AspNetCore.Common;
 
 public abstract class SortingConfiguration<TSource, TSortBy> : ISortingConfiguration<TSource, TSortBy> 
-    where TSortBy : Enum
+    where TSortBy : MikesPagingEnum
 {
     private readonly Dictionary<TSortBy, Expression<Func<TSource, object>>> _sorters = [];
     public IReadOnlyDictionary<TSortBy, Expression<Func<TSource, object>>> Sorters => _sorters.AsReadOnly();

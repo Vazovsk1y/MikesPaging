@@ -13,7 +13,7 @@ public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFac
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 
     public IQueryable<TSource> ApplySorting<TSortBy>(IQueryable<TSource> source, SortingOptions<TSortBy>? sortingOptions)
-        where TSortBy : Enum
+        where TSortBy : MikesPagingEnum
     {
         if (sortingOptions is null)
         {
@@ -35,7 +35,7 @@ public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFac
             }
 
             var parameter = Expression.Parameter(typeof(TSource), "x");
-            var property = Expression.Property(parameter, sortingOptions.SortBy.ToString());
+            var property = Expression.Property(parameter, sortingOptions.SortBy.PropertyName);
             var conversion = Expression.Convert(property, typeof(object));
 
             var lambda = Expression.Lambda<Func<TSource, object>>(conversion, parameter);

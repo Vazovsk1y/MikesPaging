@@ -9,12 +9,12 @@ using System.Linq.Expressions;
 
 namespace MikesPaging.AspNetCore.Services;
 
-public class DefaultFilteringManager<TSource>(IServiceScopeFactory serviceScopeFactory) : IFilteringManager<TSource>
+public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory serviceScopeFactory) : IFilteringManager<TSource>
 {
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 
     public IQueryable<TSource> ApplyFiltering<TFilterBy>(IQueryable<TSource> source, FilteringOptions<TFilterBy>? filteringOptions) 
-        where TFilterBy : Enum
+        where TFilterBy : MikesPagingEnum
     {
         if (filteringOptions is null)
         {
@@ -41,7 +41,7 @@ public class DefaultFilteringManager<TSource>(IServiceScopeFactory serviceScopeF
     }
 
     private Expression<Func<TSource, bool>> GetAndFilterExpression<T>(IReadOnlyCollection<Filter<T>> filters)
-        where T : Enum
+        where T : MikesPagingEnum
     {
         var parameter = Expression.Parameter(typeof(TSource), "x");
         Expression? andExpression = null;
@@ -63,7 +63,7 @@ public class DefaultFilteringManager<TSource>(IServiceScopeFactory serviceScopeF
     }
 
     private Expression<Func<TSource, bool>> GetOrFilterExpression<T>(IReadOnlyCollection<Filter<T>> filters)
-        where T : Enum
+        where T : MikesPagingEnum
     {
         var parameter = Expression.Parameter(typeof(TSource), "x");
         Expression? orExpression = null;
@@ -85,7 +85,7 @@ public class DefaultFilteringManager<TSource>(IServiceScopeFactory serviceScopeF
     }
 
     private Expression BuildFilterExpression<T>(Filter<T> filter, ParameterExpression parameter)
-        where T : Enum
+        where T : MikesPagingEnum
     {
         using var scope = _serviceScopeFactory.CreateScope();
         var configurationType = typeof(IFilteringConfiguration<,>).MakeGenericType(typeof(TSource), typeof(T));
@@ -99,7 +99,7 @@ public class DefaultFilteringManager<TSource>(IServiceScopeFactory serviceScopeF
             }
         }
 
-        var property = Expression.Property(parameter, filter.FilterBy.ToString());
+        var property = Expression.Property(parameter, filter.FilterBy.PropertyName);
         var convertionResult = TypeDescriptor.GetConverter(property.Type).ConvertFromInvariantString(filter.Value) 
             ?? throw new InvalidCastException($"Unable convert filter value {filter.Value} to {property.Type.Name} property type.");
 
@@ -128,7 +128,7 @@ public class DefaultFilteringManager<TSource>(IServiceScopeFactory serviceScopeF
     }
 
     private static void Validate<T>(FilteringOptions<T> filteringOptions)
-        where T : Enum
+        where T : MikesPagingEnum
     {
         FilteringException.ThrowIf(filteringOptions.Filters is null || filteringOptions.Filters.Count == 0, Errors.ValueCannotBeNullOrEmpty("Filters collection"));
         FilteringException.ThrowIf(new HashSet<Filter<T>>(filteringOptions.Filters!).Count != filteringOptions.Filters!.Count, Errors.Filtering.FiltersCollectionCannotContainDuplicates);

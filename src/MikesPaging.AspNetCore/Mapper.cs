@@ -40,7 +40,7 @@ public static class Mapper
             return MappingResult<SortingOptions<TSortBy>>.Failure(Errors.InvalidStringValue("sort direction", sortingOptionsModel.SortDirection));
         }
 
-        var sortBy = MikesPagingEnum.Find<TSortBy>(sortingOptionsModel.SortBy);
+        var sortBy = MikesPagingEnum.FindFirstOrDefault<TSortBy>(sortingOptionsModel.SortBy);
         if (sortBy is null)
         {
             return MappingResult<SortingOptions<TSortBy>>.Failure(Errors.InvalidStringValue("sort by", sortingOptionsModel.SortBy));
@@ -60,6 +60,11 @@ public static class Mapper
         if (filteringOptionsModel.Filters is null || filteringOptionsModel.Filters.Count == 0)
         {
             return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.ValueCannotBeNullOrEmpty("Filters collection"));
+        }
+
+        if (filteringOptionsModel.Filters.Any(e => e is null))
+        {
+            return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.ValueCannotBeNull("Filter"));
         }
 
         if (filteringOptionsModel.Filters.Any(e => e.Value is null))
@@ -96,7 +101,7 @@ public static class Mapper
                 return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.ValueCannotBeNull("Filter value"));
             }
 
-            var filterBy = MikesPagingEnum.Find<T>(item.FilterBy);
+            var filterBy = MikesPagingEnum.FindFirstOrDefault<T>(item.FilterBy);
             if (filterBy is null)
             {
                 return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.InvalidStringValue("filter by", item.FilterBy));

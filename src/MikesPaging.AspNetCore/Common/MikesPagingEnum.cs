@@ -19,29 +19,34 @@ public abstract class MikesPagingEnum
     {
         MikesPagingException.ThrowIf(string.IsNullOrWhiteSpace(propertyName), Errors.ValueCannotBeNullOrEmpty("Property name"));
         MikesPagingException.ThrowIf(allowedNames is null || allowedNames.Count == 0, Errors.ValueCannotBeNullOrEmpty("Allowed names"));
-        MikesPagingException.ThrowIf(allowedNames!.Any(string.IsNullOrWhiteSpace), "Allowed values collection cannot contain null or empty string.");
+        MikesPagingException.ThrowIf(allowedNames!.Any(string.IsNullOrWhiteSpace), "Allowed names collection cannot contain null or empty string.");
+        MikesPagingException.ThrowIf(allowedNames!.Distinct().Count() != allowedNames!.Count, "Allowed names collection contain duplicates.");
 
         _ignoreCase = ignoreCase;
         PropertyName = propertyName;
         AllowedNames = allowedNames!;
     }
 
-    internal static IEnumerable<T> Enumerate<T>()
+    public static IEnumerable<T> Enumerate<T>()
         where T : MikesPagingEnum
     {
         var enumType = typeof(T);
         var fields = enumType
-            .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-            .Where(f => f.FieldType == enumType);
+            .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic)
+            .Where(f => f.FieldType == enumType && (f.IsPublic || f.IsAssembly) && f.IsInitOnly)
+            .OrderBy(e => e.Name);
 
         foreach (var field in fields)
         {
-            yield return (T)field.GetValue(null)! 
-                ?? throw new ArgumentNullException("Public static readonly field cannot be null.");
+            var fieldValue = field.GetValue(null) as T;
+            if (fieldValue is not null)
+            {
+                yield return fieldValue;
+            }
         }
     }
 
-    internal static T? Find<T>(string name)
+    public static T? FindFirstOrDefault<T>(string name)
         where T : MikesPagingEnum
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);

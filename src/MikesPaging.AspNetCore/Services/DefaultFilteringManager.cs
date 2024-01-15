@@ -131,7 +131,8 @@ public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory servic
         where T : FilteringEnum
     {
         FilteringException.ThrowIf(filteringOptions.Filters is null || filteringOptions.Filters.Count == 0, Errors.ValueCannotBeNullOrEmpty("Filters collection"));
-        FilteringException.ThrowIf(new HashSet<Filter<T>>(filteringOptions.Filters!).Count != filteringOptions.Filters!.Count, Errors.Filtering.FiltersCollectionCannotContainDuplicates);
+        FilteringException.ThrowIf(filteringOptions.Filters!.Distinct().Count() != filteringOptions.Filters!.Count, Errors.Filtering.FiltersCollectionCannotContainDuplicates);
         FilteringException.ThrowIf(filteringOptions.Filters.Any(e => e.Value is null), Errors.ValueCannotBeNull("Filter value"));
+        FilteringException.ThrowIf(filteringOptions.Filters.Any(e => e is null), Errors.ValueCannotBeNull("Filter"));
     }
 }

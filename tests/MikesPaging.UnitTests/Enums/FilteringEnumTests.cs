@@ -6,7 +6,7 @@ namespace MikesPaging.UnitTests.Enums;
 public class FilteringEnumTests
 {
     [Fact]
-    public void TypeInitializationException_Throws_when_invalid_enums_defined()
+    public void TypeInitializationException_Should_Throw_when_invalid_enums_defined()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesFilteringEnum.EmptyStringPassedToPropertyName);
 

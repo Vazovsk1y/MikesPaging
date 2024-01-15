@@ -6,7 +6,7 @@ namespace MikesPaging.UnitTests.Enums;
 public class SortingEnumTests
 {
     [Fact]
-    public void TypeInitializationException_Should_Throw_Exception_when_invalid_enum_defined()
+    public void TypeInitializationException_Should_Throw__when_invalid_enum_defined()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.EmptyStringPassedToPropertyName);
 

@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MikesPaging.WebApi", "examp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MikesPaging.AspNetCore", "src\MikesPaging.AspNetCore\MikesPaging.AspNetCore.csproj", "{A5159BAD-DCFC-4C3F-AA04-BBB61590F9B0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9DDB136B-EB67-493B-B591-538B6E46EB51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MikesPaging.UnitTests", "tests\MikesPaging.UnitTests\MikesPaging.UnitTests.csproj", "{C9369C2A-D8C0-46CC-A4F9-53A148F1EDEF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +29,10 @@ Global
 		{A5159BAD-DCFC-4C3F-AA04-BBB61590F9B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5159BAD-DCFC-4C3F-AA04-BBB61590F9B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5159BAD-DCFC-4C3F-AA04-BBB61590F9B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9369C2A-D8C0-46CC-A4F9-53A148F1EDEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9369C2A-D8C0-46CC-A4F9-53A148F1EDEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9369C2A-D8C0-46CC-A4F9-53A148F1EDEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9369C2A-D8C0-46CC-A4F9-53A148F1EDEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +40,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{710FE138-0A63-4F66-B95A-258229C42A84} = {D7A79BA3-E155-464D-8FC8-8E4C7B53997F}
 		{A5159BAD-DCFC-4C3F-AA04-BBB61590F9B0} = {31E6AE98-F431-433F-8D70-D7F8DDD4028E}
+		{C9369C2A-D8C0-46CC-A4F9-53A148F1EDEF} = {9DDB136B-EB67-493B-B591-538B6E46EB51}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ADA444FC-179B-4FF5-B238-CA40D27E7A06}

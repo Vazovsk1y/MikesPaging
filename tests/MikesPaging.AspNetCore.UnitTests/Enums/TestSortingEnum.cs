@@ -3,7 +3,7 @@ using MikesPaging.AspNetCore.UnitTests.Models;
 
 namespace MikesPaging.AspNetCore.UnitTests.Enums;
 
-internal class TestSortingEnum : SortingEnum
+public class TestSortingEnum : SortingEnum
 {
     // valid
 
@@ -34,7 +34,7 @@ internal class TestSortingEnum : SortingEnum
     public static TestSortingEnum ByLastNameReadOnlyProperty => new(nameof(TestEntity.LastName), AllowedTestEntityNames.AllowedNamesForLastName);
    
     //
-    private TestSortingEnum(string propertyName, IReadOnlyCollection<string> allowedNames, bool ignoreCase = true) : base(propertyName, allowedNames, ignoreCase)
+    internal TestSortingEnum(string propertyName, IReadOnlyCollection<string> allowedNames, bool ignoreCase = true) : base(propertyName, allowedNames, ignoreCase)
     {
     }
 }

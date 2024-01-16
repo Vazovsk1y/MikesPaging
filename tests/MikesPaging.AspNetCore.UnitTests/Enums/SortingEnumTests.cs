@@ -5,8 +5,23 @@ namespace MikesPaging.AspNetCore.UnitTests.Enums;
 
 public class SortingEnumTests
 {
+    public static TheoryData<TestSortingEnum, TestSortingEnum, bool> SortingEnums { get; } = new TheoryData<TestSortingEnum, TestSortingEnum, bool>
+    {
+        { new("propertyName", ["propertyName"]), new("property", ["propertyName"]), false },
+        { new("propertyName", ["propertyName"]), new("propertyName", ["propertyName", "another"]), false },
+        { new("propertyName", ["another", "propertyName"]), new("propertyName", ["Another", "propertyName"]), false },
+        { new("propertyName", ["propertyName", "another"]), new("propertyName", ["Another", "propertyName"]), false },
+        { new("propertyName", ["propertyName"], true), new("propertyName", ["propertyName"], false), false },
+
+        { new("propertyName", ["propertyName"]), new("propertyName", ["propertyName"]), true },
+        { new("propertyName", ["propertyName", "another"]), new("propertyName", ["propertyName", "another"]), true },
+        { new("propertyName", ["propertyName", "another"]), new("propertyName", ["another", "propertyName"]), true },
+        { new("propertyName", ["propertyName", "another"], false), new("propertyName", ["another", "propertyName"], false), true },
+    };
+
+
     [Fact]
-    public void TypeInitializationException_Should_Throw__when_invalid_enum_defined()
+    public void TypeInitializationException_Should_Throw_when_invalid_enum_defined()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.EmptyStringPassedToPropertyName);
 
@@ -64,5 +79,14 @@ public class SortingEnumTests
 
         caseSensitiveResult.Should().BeEquivalentTo(expected);
         caseChangedResult.Should().BeNull();
+    }
+
+    [Theory]
+    [MemberData(nameof(SortingEnums))]
+    public void Equals_Should_Return_Expected(TestSortingEnum testSortingEnum, TestSortingEnum testSortingEnum1, bool expected)
+    {
+        var result = testSortingEnum.Equals(testSortingEnum1);
+
+        result.Should().Be(expected);
     }
 }

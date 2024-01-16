@@ -82,7 +82,8 @@ public abstract class MikesPagingEnum
     private IEnumerable<object?> GetEqualityComponents()
     {
         yield return PropertyName;
-        foreach (var item in AllowedNames)
+        yield return _ignoreCase;
+        foreach (var item in AllowedNames.OrderBy(e => e))
         {
             yield return item;
         }

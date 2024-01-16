@@ -1,8 +1,9 @@
 ﻿using MikesPaging.AspNetCore.Common;
+using MikesPaging.AspNetCore.Common.Enums;
 
 namespace MikesPaging.AspNetCore.UnitTests.Enums;
 
-internal class InvalidValuesFilteringEnum : FilteringEnum
+public class InvalidValuesFilteringEnum : FilteringEnum
 {
     public static InvalidValuesFilteringEnum DuplicatesInAllowedNames = new(nameof(DuplicatesInAllowedNames), [nameof(DuplicatesInAllowedNames), nameof(DuplicatesInAllowedNames)]);
 
@@ -17,7 +18,12 @@ internal class InvalidValuesFilteringEnum : FilteringEnum
     public static InvalidValuesFilteringEnum NullContainsInAllowedNames = new(nameof(NullContainsInAllowedNames), [nameof(NullPassedToPropertyName), null]);
 
     public static InvalidValuesFilteringEnum EmptyStringContainsInAllowedNames = new(nameof(EmptyStringContainsInAllowedNames), [nameof(EmptyStringContainsInAllowedNames), string.Empty]);
-    private InvalidValuesFilteringEnum(string propertyName, IReadOnlyCollection<string> allowedNames) : base(propertyName, allowedNames)
+
+    public static InvalidValuesFilteringEnum DuplicatesInInapplicableOperators = 
+        new(nameof(EmptyStringContainsInAllowedNames), [nameof(EmptyStringContainsInAllowedNames), string.Empty], inapplicableOperators: [ FilteringOperators.NotEqual, FilteringOperators.NotEqual ]);
+
+    private InvalidValuesFilteringEnum(string propertyName, IReadOnlyCollection<string> allowedNames, bool ignoreCase = true, IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null) 
+        : base(propertyName, allowedNames, ignoreCase, inapplicableOperators)
     {
     }
 }

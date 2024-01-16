@@ -58,6 +58,8 @@ public class FilteringEnumTests
         Assert.Throws<TypeInitializationException>(() => InvalidValuesFilteringEnum.EmptyStringContainsInAllowedNames);
 
         Assert.Throws<TypeInitializationException>(() => InvalidValuesFilteringEnum.NullContainsInAllowedNames);
+
+        Assert.Throws<TypeInitializationException>(() => InvalidValuesFilteringEnum.DuplicatesInInapplicableOperators);
     }
 
     [Fact]

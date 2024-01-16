@@ -98,7 +98,13 @@ public class MapperTests
         new([new(AllowedTestEntityNames.All.GetRandom(), "25", "fdafdsafdsa")], null),
 
         // invalid (contains duplicates)
-        new([new ("first_name", "value", "notEqual"), new("first_name", "value", "notEqual")], _or)
+        new([new ("first_name", "value", "notEqual"), new("first_name", "value", "notEqual")], _or),
+
+        // inapplicable operator passed
+        new([new (
+            FilteringEnumForMapperTests.ByAnyPropertyWithInapplicableOperators.AllowedNames.GetRandom(), 
+            _values.GetRandom(), 
+            FilteringEnumForMapperTests.ByAnyPropertyWithInapplicableOperators.InapplicableOperators.GetRandom().ToString())], Extensions.PickRandom(_or, _and))
     ];
 
     public static TheoryData<FilteringOptionsModel> ValidFilteringOptionsModels

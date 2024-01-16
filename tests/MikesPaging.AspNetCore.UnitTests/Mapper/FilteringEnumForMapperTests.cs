@@ -1,4 +1,5 @@
 ﻿using MikesPaging.AspNetCore.Common;
+using MikesPaging.AspNetCore.Common.Enums;
 using MikesPaging.AspNetCore.UnitTests.Models;
 
 namespace MikesPaging.AspNetCore.UnitTests.Mapper;
@@ -13,7 +14,10 @@ public class FilteringEnumForMapperTests : FilteringEnum
 
     public static readonly FilteringEnumForMapperTests ByAge = new(nameof(TestEntity.Age), AllowedTestEntityNames.AllowedNamesForAge);
 
-    private FilteringEnumForMapperTests(string propertyName, IReadOnlyCollection<string> allowedNames) : base(propertyName, allowedNames)
+    public static readonly FilteringEnumForMapperTests ByAnyPropertyWithInapplicableOperators = 
+        new(nameof(ByAnyPropertyWithInapplicableOperators), [nameof(ByAnyPropertyWithInapplicableOperators)], inapplicableOperators: [ FilteringOperators.GreaterThan, FilteringOperators.NotEqual ]);
+
+    internal FilteringEnumForMapperTests(string propertyName, IReadOnlyCollection<string> allowedNames, bool ignoreCase = true, IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null) : base(propertyName, allowedNames, ignoreCase, inapplicableOperators)
     {
     }
 }

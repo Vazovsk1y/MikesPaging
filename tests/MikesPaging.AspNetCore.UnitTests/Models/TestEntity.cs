@@ -1,4 +1,4 @@
-﻿namespace MikesPaging.UnitTests.Models;
+﻿namespace MikesPaging.AspNetCore.UnitTests.Models;
 
 internal class TestEntity
 {

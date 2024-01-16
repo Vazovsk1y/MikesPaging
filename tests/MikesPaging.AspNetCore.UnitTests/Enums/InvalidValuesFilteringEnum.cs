@@ -1,6 +1,6 @@
 ﻿using MikesPaging.AspNetCore.Common;
 
-namespace MikesPaging.UnitTests.Enums;
+namespace MikesPaging.AspNetCore.UnitTests.Enums;
 
 internal class InvalidValuesFilteringEnum : FilteringEnum
 {

@@ -3,9 +3,9 @@ using MikesPaging.AspNetCore;
 using MikesPaging.AspNetCore.Common;
 using MikesPaging.AspNetCore.Common.Enums;
 using MikesPaging.AspNetCore.Common.ViewModels;
-using MikesPaging.UnitTests.Models;
+using MikesPaging.AspNetCore.UnitTests.Models;
 
-namespace MikesPaging.UnitTests.Mapper;
+namespace MikesPaging.AspNetCore.UnitTests.Mapper;
 
 public class MapperTests
 {

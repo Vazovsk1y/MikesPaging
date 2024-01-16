@@ -1,7 +1,7 @@
 ﻿using MikesPaging.AspNetCore.Common;
-using MikesPaging.UnitTests.Models;
+using MikesPaging.AspNetCore.UnitTests.Models;
 
-namespace MikesPaging.UnitTests.Mapper;
+namespace MikesPaging.AspNetCore.UnitTests.Mapper;
 
 public class FilteringEnumForMapperTests : FilteringEnum
 {

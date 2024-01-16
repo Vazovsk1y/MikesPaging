@@ -1,4 +1,4 @@
-﻿namespace MikesPaging.UnitTests;
+﻿namespace MikesPaging.AspNetCore.UnitTests;
 
 internal static class Extensions
 {

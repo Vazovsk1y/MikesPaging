@@ -33,4 +33,9 @@ public abstract class FilteringEnum : MikesPagingEnum
             yield return @operator;
         }
     }
+
+    public bool IsOperatorApplicable(FilteringOperators @operator)
+    {
+        return !InapplicableOperators.Contains(@operator);
+    }
 }

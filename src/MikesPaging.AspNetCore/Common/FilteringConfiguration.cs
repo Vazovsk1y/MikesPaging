@@ -15,6 +15,8 @@ public abstract class FilteringConfiguration<TSource, TFilterBy> : IFilteringCon
     {
         FilteringException.ThrowIf(filterBy is null, Errors.ValueCannotBeNull("Filter by"));
         FilteringException.ThrowIf(value is null, Errors.ValueCannotBeNull("Filtering delegate"));
+        FilteringException.ThrowIf(!filterBy!.IsOperatorApplicable(@operator), Errors.Filtering.OperatorIsNotApplicableFor(filterBy, @operator));
+
         _filters[new FilterKey<TFilterBy>(filterBy!, @operator)] = value!;
     }
 }

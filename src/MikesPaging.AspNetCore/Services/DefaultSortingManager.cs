@@ -3,6 +3,7 @@ using MikesPaging.AspNetCore.Common;
 using MikesPaging.AspNetCore.Common.Enums;
 using MikesPaging.AspNetCore.Common.Interfaces;
 using MikesPaging.AspNetCore.Exceptions;
+using MikesPaging.AspNetCore.Exceptions.Base;
 using MikesPaging.AspNetCore.Services.Interfaces;
 using System.Linq.Expressions;
 
@@ -22,12 +23,12 @@ public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFac
 
         Validate(sortingOptions);
 
-        using var scope = _serviceScopeFactory.CreateScope();
-        var configurationType = typeof(ISortingConfiguration< , >).MakeGenericType(typeof(TSource), typeof(TSortBy));
-        var configuration = scope.ServiceProvider.GetService(configurationType);
-
         try
         {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var configurationType = typeof(ISortingConfiguration<,>).MakeGenericType(typeof(TSource), typeof(TSortBy));
+            var configuration = scope.ServiceProvider.GetService(configurationType);
+
             if (configuration is ISortingConfiguration<TSource, TSortBy> castedConfiguration)
             {
                 if (castedConfiguration.Sorters.TryGetValue(sortingOptions.SortBy, out var configuredSorter))
@@ -44,7 +45,7 @@ public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFac
 
             return Sort(source, sortingOptions.SortDirection, lambda);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not MikesPagingException)
         {
             throw new SortingException(ex.Message, ex);
         }

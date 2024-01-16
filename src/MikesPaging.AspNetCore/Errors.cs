@@ -1,4 +1,7 @@
-﻿namespace MikesPaging.AspNetCore;
+﻿using MikesPaging.AspNetCore.Common;
+using MikesPaging.AspNetCore.Common.Enums;
+
+namespace MikesPaging.AspNetCore;
 
 internal static class Errors
 {
@@ -19,5 +22,7 @@ internal static class Errors
     internal static class Filtering
     {
         public const string FiltersCollectionCannotContainDuplicates = "Filters collection cannot contain duplicates.";
+
+        public static string OperatorIsNotApplicableFor(FilteringEnum filteringEnum, FilteringOperators @operator) => $"{@operator} is not appicable for {filteringEnum.PropertyName} property.";
     }
 }

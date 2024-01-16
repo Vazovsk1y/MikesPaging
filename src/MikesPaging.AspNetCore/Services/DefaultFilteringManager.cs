@@ -3,6 +3,7 @@ using MikesPaging.AspNetCore.Common;
 using MikesPaging.AspNetCore.Common.Enums;
 using MikesPaging.AspNetCore.Common.Interfaces;
 using MikesPaging.AspNetCore.Exceptions;
+using MikesPaging.AspNetCore.Exceptions.Base;
 using MikesPaging.AspNetCore.Services.Interfaces;
 using System.ComponentModel;
 using System.Linq.Expressions;
@@ -34,7 +35,7 @@ public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory servic
 
             return source.Where(compositeFilterExpression);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not MikesPagingException)
         {
             throw new FilteringException(ex.Message, ex);
         }
@@ -87,6 +88,8 @@ public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory servic
     private Expression BuildFilterExpression<T>(Filter<T> filter, ParameterExpression parameter)
         where T : FilteringEnum
     {
+        FilteringException.ThrowIf(!filter.FilterBy.IsOperatorApplicable(filter.Operator), Errors.Filtering.OperatorIsNotApplicableFor(filter.FilterBy, filter.Operator));
+
         using var scope = _serviceScopeFactory.CreateScope();
         var configurationType = typeof(IFilteringConfiguration<,>).MakeGenericType(typeof(TSource), typeof(T));
         var configuration = scope.ServiceProvider.GetService(configurationType);

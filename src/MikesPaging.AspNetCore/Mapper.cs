@@ -113,6 +113,11 @@ public static class Mapper
                 return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.InvalidStringValue("filtering operator", item.Operator));
             }
 
+            if (!filterBy.IsOperatorApplicable(@operator))
+            {
+                return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.Filtering.OperatorIsNotApplicableFor(filterBy, @operator));
+            }
+
             var filter = new Filter<T>(filterBy, @operator, item.Value);
             result.Add(filter);
         }

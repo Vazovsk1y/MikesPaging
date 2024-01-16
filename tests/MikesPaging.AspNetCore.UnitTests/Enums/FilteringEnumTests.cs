@@ -6,7 +6,7 @@ namespace MikesPaging.AspNetCore.UnitTests.Enums;
 
 public class FilteringEnumTests
 {
-    public static TheoryData<TestFilteringEnum, TestFilteringEnum, bool> FilteringEnums { get; } = new TheoryData<TestFilteringEnum, TestFilteringEnum, bool>
+    public static TheoryData<TestFilteringEnum, TestFilteringEnum, bool> FilteringEnums { get; } = new ()
     {
         // not equal
         { new("propertyName", ["propertyName"], 
@@ -40,6 +40,15 @@ public class FilteringEnumTests
         { new("propertyName", ["propertyName", "another"]), new("propertyName", ["propertyName", "another"]), true },
         { new("propertyName", ["propertyName", "another"]), new("propertyName", ["another", "propertyName"]), true },
         { new("propertyName", ["propertyName", "another"], ignoreCase: false), new("propertyName", ["another", "propertyName"], ignoreCase: false), true },
+    };
+
+    public static TheoryData<TestFilteringEnum, FilteringOperators, bool> DataForIsOperatorApplicable = new()
+    {
+        { new ("property", ["property"], inapplicableOperators: [ FilteringOperators.NotEqual ]), FilteringOperators.NotEqual, false },
+        { new ("property", ["property"], inapplicableOperators: [ FilteringOperators.NotEqual, FilteringOperators.Contains ]), FilteringOperators.Contains, false },
+
+        { new ("property", ["property"], inapplicableOperators: [ FilteringOperators.StartsWith ]), FilteringOperators.NotEqual, true },
+        { new ("property", ["property"], inapplicableOperators: [ FilteringOperators.NotEqual, FilteringOperators.Contains ]), FilteringOperators.StartsWith, true },
     };
 
     [Fact]
@@ -80,7 +89,6 @@ public class FilteringEnumTests
         string searchTerm = expected.AllowedNames.GetRandom();
         var defaultCaseResult = MikesPagingEnum.FindFirstOrDefault<TestFilteringEnum>(searchTerm);
         var caseChangedResult = MikesPagingEnum.FindFirstOrDefault<TestFilteringEnum>(new string(searchTerm
-            .ToCharArray()
             .Select(e => char.IsLower(e) ? char.ToUpper(e) : char.ToLower(e))
             .ToArray()));
 
@@ -97,7 +105,6 @@ public class FilteringEnumTests
         string searchTerm = expected.AllowedNames.GetRandom();
         var caseSensitiveResult = MikesPagingEnum.FindFirstOrDefault<TestFilteringEnum>(searchTerm);
         var caseChangedResult = MikesPagingEnum.FindFirstOrDefault<TestFilteringEnum>(new string(searchTerm
-            .ToCharArray()
             .Select(e => char.IsLower(e) ? char.ToUpper(e) : char.ToLower(e))
             .ToArray()));
 
@@ -110,6 +117,15 @@ public class FilteringEnumTests
     public void Equals_Should_Return_Expected(TestFilteringEnum testFilteringEnum, TestFilteringEnum testFilteringEnum1, bool expected)
     {
         var result = testFilteringEnum.Equals(testFilteringEnum1);
+
+        result.Should().Be(expected);
+    }
+
+    [Theory]
+    [MemberData(nameof(DataForIsOperatorApplicable))]
+    public void IsOperatorApplicable_Should_Return_Expected(TestFilteringEnum testFilteringEnum, FilteringOperators @operator, bool expected)
+    {
+        var result = testFilteringEnum.IsOperatorApplicable(@operator);
 
         result.Should().Be(expected);
     }

@@ -56,7 +56,6 @@ public class SortingEnumTests
         string searchTerm = expected.AllowedNames.GetRandom();
         var defaultCaseResult = MikesPagingEnum.FindFirstOrDefault<TestSortingEnum>(searchTerm);
         var caseChangedResult = MikesPagingEnum.FindFirstOrDefault<TestSortingEnum>(new string(searchTerm
-            .ToCharArray()
             .Select(e => char.IsLower(e) ? char.ToUpper(e) : char.ToLower(e))
             .ToArray()));
 
@@ -73,7 +72,6 @@ public class SortingEnumTests
         string searchTerm = expected.AllowedNames.GetRandom();
         var caseSensitiveResult = MikesPagingEnum.FindFirstOrDefault<TestSortingEnum>(searchTerm);
         var caseChangedResult = MikesPagingEnum.FindFirstOrDefault<TestSortingEnum>(new string(searchTerm
-            .ToCharArray()
             .Select(e => char.IsLower(e) ? char.ToUpper(e) : char.ToLower(e))
             .ToArray()));
 

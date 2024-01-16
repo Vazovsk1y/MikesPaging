@@ -1,10 +1,47 @@
 ﻿using FluentAssertions;
 using MikesPaging.AspNetCore.Common;
+using MikesPaging.AspNetCore.Common.Enums;
 
 namespace MikesPaging.AspNetCore.UnitTests.Enums;
 
 public class FilteringEnumTests
 {
+    public static TheoryData<TestFilteringEnum, TestFilteringEnum, bool> FilteringEnums { get; } = new TheoryData<TestFilteringEnum, TestFilteringEnum, bool>
+    {
+        // not equal
+        { new("propertyName", ["propertyName"], 
+            inapplicableOperators: [ FilteringOperators.NotEqual ]), 
+            new("property", ["propertyName"], 
+                inapplicableOperators: [ FilteringOperators.GreaterThanOrEqual ]), false },
+
+        { new("propertyName", ["propertyName"], ignoreCase: true,
+            inapplicableOperators: [ FilteringOperators.NotEqual ]),
+            new("propertyName", ["propertyName"], ignoreCase: false,
+                inapplicableOperators: [ FilteringOperators.NotEqual ]), false },
+
+        { new("propertyName", ["propertyName"]), new("propertyName", ["propertyName", "another"]), false },
+        { new("propertyName", ["another", "propertyName"]), new("propertyName", ["Another", "propertyName"]), false },
+        { new("propertyName", ["propertyName", "another"]), new("propertyName", ["Another", "propertyName"]), false },
+        { new("propertyName", ["propertyName"], true), new("propertyName", ["propertyName"], false), false },
+
+
+        // equal
+        { new("propertyName", ["propertyName"], 
+            inapplicableOperators: [ FilteringOperators.NotEqual ]), 
+            new("propertyName", ["propertyName"], 
+                inapplicableOperators: [ FilteringOperators.NotEqual ]), true },
+
+        { new("propertyName", ["propertyName"], 
+            inapplicableOperators: [ FilteringOperators.NotEqual, FilteringOperators.GreaterThanOrEqual ]), 
+          new("propertyName", ["propertyName"], 
+            inapplicableOperators: [ FilteringOperators.GreaterThanOrEqual, FilteringOperators.NotEqual ]), true },
+
+        { new("propertyName", ["propertyName"]), new("propertyName", ["propertyName"]), true },
+        { new("propertyName", ["propertyName", "another"]), new("propertyName", ["propertyName", "another"]), true },
+        { new("propertyName", ["propertyName", "another"]), new("propertyName", ["another", "propertyName"]), true },
+        { new("propertyName", ["propertyName", "another"], ignoreCase: false), new("propertyName", ["another", "propertyName"], ignoreCase: false), true },
+    };
+
     [Fact]
     public void TypeInitializationException_Should_Throw_when_invalid_enums_defined()
     {
@@ -64,5 +101,14 @@ public class FilteringEnumTests
 
         caseSensitiveResult.Should().BeEquivalentTo(expected);
         caseChangedResult.Should().BeNull();
+    }
+
+    [Theory]
+    [MemberData(nameof(FilteringEnums))]
+    public void Equals_Should_Return_Expected(TestFilteringEnum testFilteringEnum, TestFilteringEnum testFilteringEnum1, bool expected)
+    {
+        var result = testFilteringEnum.Equals(testFilteringEnum1);
+
+        result.Should().Be(expected);
     }
 }

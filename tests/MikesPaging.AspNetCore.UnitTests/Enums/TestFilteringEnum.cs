@@ -1,9 +1,10 @@
 ﻿using MikesPaging.AspNetCore.Common;
+using MikesPaging.AspNetCore.Common.Enums;
 using MikesPaging.AspNetCore.UnitTests.Models;
 
 namespace MikesPaging.AspNetCore.UnitTests.Enums;
 
-internal class TestFilteringEnum : FilteringEnum
+public class TestFilteringEnum : FilteringEnum
 {
     // valid
 
@@ -34,7 +35,11 @@ internal class TestFilteringEnum : FilteringEnum
     public static TestFilteringEnum ByLastNameReadOnlyProperty => new(nameof(TestEntity.LastName), AllowedTestEntityNames.AllowedNamesForLastName);
 
     //
-    private TestFilteringEnum(string propertyName, IReadOnlyCollection<string> allowedNames, bool ignoreCase = true) : base(propertyName, allowedNames, ignoreCase)
+    internal TestFilteringEnum(
+        string propertyName, 
+        IReadOnlyCollection<string> allowedNames, 
+        bool ignoreCase = true, 
+        IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null) : base(propertyName, allowedNames, ignoreCase, inapplicableOperators)
     {
     }
 }

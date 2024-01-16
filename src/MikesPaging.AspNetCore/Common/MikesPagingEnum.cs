@@ -79,7 +79,7 @@ public abstract class MikesPagingEnum
             }
         });
 
-    private IEnumerable<object?> GetEqualityComponents()
+    protected virtual IEnumerable<object?> GetEqualityComponents()
     {
         yield return PropertyName;
         yield return _ignoreCase;

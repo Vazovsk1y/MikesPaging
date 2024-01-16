@@ -11,4 +11,8 @@ public abstract class SortingEnum : MikesPagingEnum
     {
 
     }
+    protected sealed override IEnumerable<object?> GetEqualityComponents()
+    {
+        return base.GetEqualityComponents();
+    }
 }

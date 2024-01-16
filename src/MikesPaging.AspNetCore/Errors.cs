@@ -23,6 +23,6 @@ internal static class Errors
     {
         public const string FiltersCollectionCannotContainDuplicates = "Filters collection cannot contain duplicates.";
 
-        public static string OperatorIsNotApplicableFor(FilteringEnum filteringEnum, FilteringOperators @operator) => $"{@operator} is not appicable for {filteringEnum.PropertyName} property.";
+        public static string OperatorIsNotApplicableFor(FilteringEnum filteringEnum, FilteringOperators @operator) => $"{@operator} is not appicable operator for {filteringEnum.PropertyName} property.";
     }
 }

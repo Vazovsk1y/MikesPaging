@@ -104,7 +104,7 @@ public class FilteringEnumTests
     {
         var expected = new[] { TestFilteringEnum.ByFirstName, TestFilteringEnum.ByLastNameInternalField, TestFilteringEnum.ByLastName, TestFilteringEnum.ByAnyPropertyCaseSensitive };
 
-        var result = MikesPagingEnum.Enumerate<TestFilteringEnum>();
+        var result = FilteringEnum.Enumerate<TestFilteringEnum>();
 
         result.OrderBy(e => e.PropertyName).Should().BeEquivalentTo(expected.OrderBy(e => e.PropertyName));
     }
@@ -115,8 +115,8 @@ public class FilteringEnumTests
         var expected = TestFilteringEnum.ByLastName;
         string searchTerm = expected.AllowedNames.GetRandom();
 
-        var defaultCaseResult = MikesPagingEnum.FindFirstOrDefault<TestFilteringEnum>(searchTerm);
-        var caseChangedResult = MikesPagingEnum.FindFirstOrDefault<TestFilteringEnum>(new string(searchTerm
+        var defaultCaseResult = FilteringEnum.FindFirstOrDefault<TestFilteringEnum>(searchTerm);
+        var caseChangedResult = FilteringEnum.FindFirstOrDefault<TestFilteringEnum>(new string(searchTerm
             .Select(e => char.IsLower(e) ? char.ToUpper(e) : char.ToLower(e))
             .ToArray()));
 
@@ -131,8 +131,8 @@ public class FilteringEnumTests
         var expected = TestFilteringEnum.ByAnyPropertyCaseSensitive;
         string searchTerm = expected.AllowedNames.GetRandom();
 
-        var caseSensitiveResult = MikesPagingEnum.FindFirstOrDefault<TestFilteringEnum>(searchTerm);
-        var caseChangedResult = MikesPagingEnum.FindFirstOrDefault<TestFilteringEnum>(new string(searchTerm
+        var caseSensitiveResult = FilteringEnum.FindFirstOrDefault<TestFilteringEnum>(searchTerm);
+        var caseChangedResult = FilteringEnum.FindFirstOrDefault<TestFilteringEnum>(new string(searchTerm
             .Select(e => char.IsLower(e) ? char.ToUpper(e) : char.ToLower(e))
             .ToArray()));
 

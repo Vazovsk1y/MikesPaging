@@ -179,7 +179,7 @@ public class MapperTests
         bool expected = true;
         var expectedValue = new SortingOptions<SortingEnumForMapperTests>(
             Enum.Parse<SortDirections>(sortingOptionsModel.SortDirection, true),
-            MikesPagingEnum.FindFirstOrDefault<SortingEnumForMapperTests>(sortingOptionsModel.SortBy) ?? throw new InvalidOperationException("Sort by property not found."));
+            SortingEnum.FindFirstOrDefault<SortingEnumForMapperTests>(sortingOptionsModel.SortBy) ?? throw new InvalidOperationException("Sort by property not found."));
 
         var result = sortingOptionsModel.ToOptions<SortingEnumForMapperTests>();
 
@@ -206,7 +206,7 @@ public class MapperTests
         var expectedValue = new FilteringOptions<FilteringEnumForMapperTests>(
             model.Filters.Select(e =>
                        new Filter<FilteringEnumForMapperTests>(
-                           MikesPagingEnum.FindFirstOrDefault<FilteringEnumForMapperTests>(e.FilterBy) ?? throw new InvalidOperationException("Filter by property not found."),
+                           FilteringEnum.FindFirstOrDefault<FilteringEnumForMapperTests>(e.FilterBy) ?? throw new InvalidOperationException("Filter by property not found."),
                            Enum.Parse<FilteringOperators>(e.Operator, true),
                            e.Value)).ToList(),
             Enum.Parse<Logic>(model.Logic, true));

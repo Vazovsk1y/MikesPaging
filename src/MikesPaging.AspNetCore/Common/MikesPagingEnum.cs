@@ -1,5 +1,4 @@
 ﻿using MikesPaging.AspNetCore.Exceptions.Base;
-using System.Reflection;
 
 namespace MikesPaging.AspNetCore.Common;
 
@@ -9,7 +8,7 @@ public abstract class MikesPagingEnum
 
     public IReadOnlyCollection<string> AllowedNames { get; }
 
-    private readonly bool _ignoreCase = true;
+    public bool IgnoreCase { get; } = true;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private MikesPagingEnum() { }
@@ -22,38 +21,9 @@ public abstract class MikesPagingEnum
         MikesPagingException.ThrowIf(allowedNames!.Any(string.IsNullOrWhiteSpace), "Allowed names collection cannot contain null or empty string.");
         MikesPagingException.ThrowIf(allowedNames!.Distinct().Count() != allowedNames!.Count, "Allowed names collection contain duplicates.");
 
-        _ignoreCase = ignoreCase;
+        IgnoreCase = ignoreCase;
         PropertyName = propertyName;
         AllowedNames = allowedNames!;
-    }
-
-    public static IEnumerable<T> Enumerate<T>()
-        where T : MikesPagingEnum
-    {
-        var enumType = typeof(T);
-        var fields = enumType
-            .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic)
-            .Where(f => f.FieldType == enumType && (f.IsPublic || f.IsAssembly) && f.IsInitOnly)
-            .OrderBy(e => e.Name);
-
-        foreach (var field in fields)
-        {
-            var fieldValue = field.GetValue(null) as T;
-            if (fieldValue is not null)
-            {
-                yield return fieldValue;
-            }
-        }
-    }
-
-    public static T? FindFirstOrDefault<T>(string name)
-        where T : MikesPagingEnum
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(name);
-
-        return Enumerate<T>()
-              .FirstOrDefault(e => 
-                     e.AllowedNames.Contains(name, e._ignoreCase ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal));
     }
 
     public override bool Equals(object? obj)
@@ -82,7 +52,7 @@ public abstract class MikesPagingEnum
     protected virtual IEnumerable<object?> GetEqualityComponents()
     {
         yield return PropertyName;
-        yield return _ignoreCase;
+        yield return IgnoreCase;
         foreach (var item in AllowedNames.OrderBy(e => e))
         {
             yield return item;

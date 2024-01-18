@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using MikesPaging.AspNetCore;
 using MikesPaging.AspNetCore.Common;
 using MikesPaging.AspNetCore.Common.Enums;
 using MikesPaging.AspNetCore.Common.ViewModels;
@@ -29,20 +28,21 @@ public class MapperTests
         true.ToString(),
     ];
 
-    public static TheoryData<PagingOptionsModel, bool> PagingOptionsModels { get; } = new()
+    public static TheoryData<PagingOptionsModel> ValidPagingOptionsModels { get; } = new()
     {
-        // invalid
-        { new(-1, -1), false },
-        { new (-1, 1), false },
-        { new(1, -1), false },
-        { new(0, 1), false },
-        { new(1, 0), false },
-        { new(0, 0), false },
+       { new (1, 1) },
+       { new (100, 1) },
+       { new (1, 100) },
+    };
 
-        // valid
-        { new(1, 1), true },
-        { new(100, 1), true },
-        { new(1, 100), true },
+    public static TheoryData<PagingOptionsModel> InvalidPagingOptionsModels { get; } = new()
+    {
+       { new (-1, -1) },
+       { new (-1, 1) },
+       { new (1, -1) },
+       { new (0, 1) },
+       { new (1, 0) },
+       { new (0, 0) },
     };
 
     public static TheoryData<SortingOptionsModel> InvalidSortingOptionsModels { get; } =
@@ -139,16 +139,27 @@ public class MapperTests
     }
 
     [Theory]
-    [MemberData(nameof(PagingOptionsModels))]
-    public void ToPagingOptions_Should_Return_Expected(PagingOptionsModel pagingOptionsModel, bool expected)
+    [MemberData(nameof(ValidPagingOptionsModels))]
+    public void ToPagingOptions_Should_Return_Success_Result_when_valid_data_passed(PagingOptionsModel pagingOptionsModel)
     {
+        var expected = true;
+        var expectedValue = new PagingOptions(pagingOptionsModel.PageIndex, pagingOptionsModel.PageSize);
+
         var result = pagingOptionsModel.ToOptions();
 
         result.IsSuccess.Should().Be(expected);
-        if (expected)
-        {
-            result.Value.Should().BeEquivalentTo(new PagingOptions(pagingOptionsModel.PageIndex, pagingOptionsModel.PageSize));
-        }
+        result.Value.Should().BeEquivalentTo(expectedValue);
+    }
+
+    [Theory]
+    [MemberData(nameof(InvalidPagingOptionsModels))]
+    public void ToPagingOptions_Should_Return_Failure_Result_when_invalid_data_passed(PagingOptionsModel pagingOptionsModel)
+    {
+        var expected = false;
+
+        var result = pagingOptionsModel.ToOptions();
+
+        result.IsSuccess.Should().Be(expected);
     }
 
     [Theory]
@@ -166,12 +177,14 @@ public class MapperTests
     public void ToSortingOptions_Should_Return_Success_Result_when_valid_data_passed(SortingOptionsModel sortingOptionsModel)
     {
         bool expected = true;
+        var expectedValue = new SortingOptions<SortingEnumForMapperTests>(
+            Enum.Parse<SortDirections>(sortingOptionsModel.SortDirection, true),
+            MikesPagingEnum.FindFirstOrDefault<SortingEnumForMapperTests>(sortingOptionsModel.SortBy) ?? throw new InvalidOperationException("Sort by property not found."));
+
         var result = sortingOptionsModel.ToOptions<SortingEnumForMapperTests>();
 
         result.IsSuccess.Should().Be(expected);
-        result.Value.Should().BeEquivalentTo(new SortingOptions<SortingEnumForMapperTests>(
-            Enum.Parse<SortDirections>(sortingOptionsModel.SortDirection, true),
-            MikesPagingEnum.FindFirstOrDefault<SortingEnumForMapperTests>(sortingOptionsModel.SortBy)!));
+        result.Value.Should().BeEquivalentTo(expectedValue);
     }
 
     [Theory]
@@ -190,17 +203,17 @@ public class MapperTests
     public void ToFilteringOptions_Should_Return_Success_Result_when_valid_data_passed(FilteringOptionsModel model)
     {
         var expected = true;
+        var expectedValue = new FilteringOptions<FilteringEnumForMapperTests>(
+            model.Filters.Select(e =>
+                       new Filter<FilteringEnumForMapperTests>(
+                           MikesPagingEnum.FindFirstOrDefault<FilteringEnumForMapperTests>(e.FilterBy) ?? throw new InvalidOperationException("Filter by property not found."),
+                           Enum.Parse<FilteringOperators>(e.Operator, true),
+                           e.Value)).ToList(),
+            Enum.Parse<Logic>(model.Logic, true));
 
         var result = model.ToOptions<FilteringEnumForMapperTests>();
 
         result.IsSuccess.Should().Be(expected);
-        result.Value.Should().BeEquivalentTo(new FilteringOptions<FilteringEnumForMapperTests>(
-            model.Filters.Select(e => 
-            new Filter<FilteringEnumForMapperTests>(
-                MikesPagingEnum.FindFirstOrDefault<FilteringEnumForMapperTests>(e.FilterBy)!, 
-                Enum.Parse<FilteringOperators>(e.Operator, true), 
-                e.Value)).ToList(),
-            Enum.Parse<Logic>(model.Logic, true)
-            ));
+        result.Value.Should().BeEquivalentTo(expectedValue);
     }
 }

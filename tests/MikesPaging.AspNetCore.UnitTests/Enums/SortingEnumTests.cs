@@ -19,27 +19,50 @@ public class SortingEnumTests
         { new("propertyName", ["propertyName", "another"], false), new("propertyName", ["another", "propertyName"], false), true },
     };
 
-
     [Fact]
-    public void TypeInitializationException_Should_Throw_when_invalid_enum_defined()
+    public void Ctor_Should_Throw_TypeInitializationException_when_empty_string_passed_to_property_name()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.EmptyStringPassedToPropertyName);
+    }
 
+    [Fact]
+    public void Ctor_Should_Throw_TypeInitializationException_when_null_passed_to_property_name()
+    {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.NullPassedToPropertyName);
+    }
 
+    [Fact]
+    public void Ctor_Should_Throw_TypeInitializationException_when_null_passed_to_allowed_names()
+    {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.NullPassedToAllowedNames);
+    }
 
+    [Fact]
+    public void Ctor_Should_Throw_TypeInitializationException_when_duplicates_in_allowed_names()
+    {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.DuplicatesInAllowedNames);
+    }
 
+    [Fact]
+    public void Ctor_Should_Throw_TypeInitializationException_when_empty_collection_passed_to_allowed_names()
+    {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.EmptyCollectionPassedToAllowedNames);
+    }
 
+    [Fact]
+    public void Ctor_Should_Throw_TypeInitializationException_when_empty_string_contains_in_allowed_names()
+    {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.EmptyStringContainsInAllowedNames);
+    }
 
+    [Fact]
+    public void Ctor_Should_Throw_TypeInitializationException_when_null_contains_in_allowed_names()
+    {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.NullContainsInAllowedNames);
     }
 
     [Fact]
-    public void Enumerate_Should_Return_Only_public_or_internal_static_readonly_fields_NOT_null_values()
+    public void Enumerate_Should_Return_Only_Public_Or_Internal_Static_Readonly_Fields_and_NOT_null_values()
     {
         var expected = new[] { TestSortingEnum.ByFirstName, TestSortingEnum.ByLastNameInternalField, TestSortingEnum.ByLastName, TestSortingEnum.ByAnyPropertyCaseSensitive };
 
@@ -49,11 +72,11 @@ public class SortingEnumTests
     }
 
     [Fact]
-    public void FindFirstOrDefault_Should_Return_expected_value_when_case_ignored()
+    public void FindFirstOrDefault_Should_Return_The_Same_Value_regardless_of_which_case_searchTerm_was_passed_when_case_ignore_configured_to_true()
     {
         var expected = TestSortingEnum.ByLastName;
-
         string searchTerm = expected.AllowedNames.GetRandom();
+
         var defaultCaseResult = MikesPagingEnum.FindFirstOrDefault<TestSortingEnum>(searchTerm);
         var caseChangedResult = MikesPagingEnum.FindFirstOrDefault<TestSortingEnum>(new string(searchTerm
             .Select(e => char.IsLower(e) ? char.ToUpper(e) : char.ToLower(e))
@@ -65,11 +88,11 @@ public class SortingEnumTests
     }
 
     [Fact]
-    public void FindFirstOrDefault_Should_Return_expected_value_when_case_sensitive()
+    public void FindFirstOrDefault_Should_Return_Null_when_searchTerm_case_was_changed_and_case_ignore_configured_to_false()
     {
         var expected = TestSortingEnum.ByAnyPropertyCaseSensitive;
-
         string searchTerm = expected.AllowedNames.GetRandom();
+
         var caseSensitiveResult = MikesPagingEnum.FindFirstOrDefault<TestSortingEnum>(searchTerm);
         var caseChangedResult = MikesPagingEnum.FindFirstOrDefault<TestSortingEnum>(new string(searchTerm
             .Select(e => char.IsLower(e) ? char.ToUpper(e) : char.ToLower(e))

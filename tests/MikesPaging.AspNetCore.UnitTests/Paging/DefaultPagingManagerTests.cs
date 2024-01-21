@@ -8,48 +8,41 @@ namespace MikesPaging.AspNetCore.UnitTests.Paging;
 
 public class DefaultPagingManagerTests
 {
-    private const uint ENTITIES_COUNT = 100;
-
     [Fact]
-    public void ApplyPaging_Should_Return_Paged_Collection_when_valid_pagingOptions_passed()
+    public void ApplyPaging_Should_Return_Paged_Collection_when_valid_paging_options_passed()
     {
         // Arrange
         const int pageIndex = 1;
-        const int pageSize = 10;
+        const int pageSize = 2;
 
         var pagingOptions = new PagingOptions(pageIndex, pageSize);
         var pagingManager = CreatePagingManager<TestEntity>();
-        var data = Data.GenerateTestEntities(ENTITIES_COUNT).AsQueryable();
-        var expected = data
-            .Skip((pageIndex - 1) * pageSize)
-            .Take(pageSize)
-            .Select(e => e.Id)
-            .Order()
-            .ToList();
+
+        var data = Data.TestEntities;
+        var expected = new Guid[]
+        {
+            data[0].Id,
+            data[1].Id
+        };
 
         // Act
-        var result = pagingManager.ApplyPaging(data, pagingOptions);
+        var result = pagingManager.ApplyPaging(data.AsQueryable(), pagingOptions);
 
         // Assert 
-        var actual = result
-            .Select(e => e.Id)
-            .Order()
-            .ToList();
+        var actual = result.Select(e => e.Id).ToArray();
 
         actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
-    public void ApplyPaging_Should_Return_The_Same_Collection_when_null_passed_instead_of_paging_options()
+    public void ApplyPaging_Should_Return_The_Same_Collection_when_null_passed_to_paging_options()
     {
         // Arrange
         var pagingManager = CreatePagingManager<TestEntity>();
-        var expected = Data
-            .GenerateTestEntities(ENTITIES_COUNT)
-            .AsQueryable();
+        var expected = Data.TestEntities;
 
         // Act
-        var actual = pagingManager.ApplyPaging(expected, null);
+        var actual = pagingManager.ApplyPaging(expected.AsQueryable(), null);
 
         // Assert 
         actual.Should().BeEquivalentTo(expected);
@@ -62,17 +55,15 @@ public class DefaultPagingManagerTests
     [InlineData(10, -1)]
     [InlineData(0, 0)]
     [InlineData(-1, -1)]
-    public void ApplyPaging_Should_Throw_Exception_when_invalid_pagingOptions_passed(int pageIndex, int pageSize)
+    public void ApplyPaging_Should_Throw_PagingException_when_invalid_paging_options_passed(int pageIndex, int pageSize)
     {
         // Arrange
         var invalidPagingOptions = new PagingOptions(pageIndex, pageSize);
         var pagingManager = CreatePagingManager<TestEntity>();
-        var data = Data
-            .GenerateTestEntities(ENTITIES_COUNT)
-            .AsQueryable();
+        var data = Data.TestEntities;
 
         // Act
-        IQueryable<TestEntity> Result() => pagingManager.ApplyPaging(data, invalidPagingOptions);
+        IQueryable<TestEntity> Result() => pagingManager.ApplyPaging(data.AsQueryable(), invalidPagingOptions);
 
         // Assert 
         Assert.Throws<PagingException>(Result);

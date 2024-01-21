@@ -1,19 +1,13 @@
-﻿using Bogus;
-using MikesPaging.AspNetCore.UnitTests.Models;
+﻿using MikesPaging.AspNetCore.UnitTests.Models;
 
 namespace MikesPaging.AspNetCore.UnitTests;
 
 internal static class Data
 {
-    private static readonly Faker<TestEntity> _testEntityFaker = new Faker<TestEntity>()
-        .RuleFor(e => e.Id, e => Guid.NewGuid())
-        .RuleFor(e => e.FirstName, e => e.Name.FirstName())
-        .RuleFor(e => e.LastName, e => e.Name.LastName())
-        .RuleFor(e => e.Age, e => (uint)e.Random.Int(0, 100))
-        .RuleFor(e => e.Created, e => DateTimeOffset.UtcNow);
-
-    public static IReadOnlyCollection<TestEntity> GenerateTestEntities(uint count)
-    {
-        return Enumerable.Range(0, (int)count).Select(e => _testEntityFaker.Generate()).ToList();
-    }
+    public static readonly TestEntity[] TestEntities =
+    [
+       new() { Id = Guid.NewGuid(), Age = 2, Created = DateTimeOffset.UtcNow, FirstName = "John", LastName = "Doe" },
+       new() { Id = Guid.NewGuid(), Age = 3, Created = DateTimeOffset.UtcNow, FirstName = "Mike", LastName = "Vazovskiy" },
+       new() { Id = Guid.NewGuid(), Age = 1, Created = DateTimeOffset.UtcNow, FirstName = "Dr.", LastName = "ForNever" }
+    ];
 }

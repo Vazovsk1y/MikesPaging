@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+	<PackageId>MikesPaging.AspNetCore</PackageId>
+    <Title>MikesPaging.AspNetCore</Title>
+    <Authors>Mike Vazovsk1y</Authors>
+    <Description>Simple library for adding paging, sorting and filtering to ASP.NET applications.</Description>
+    <RepositoryUrl>https://github.com/Vazovsk1y/MikesPaging</RepositoryUrl>
+	<IncludeSymbols>true</IncludeSymbols>
+	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	<Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
+  </ItemGroup>
+
+</Project>

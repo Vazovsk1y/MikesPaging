@@ -4,6 +4,15 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+	<PackageId>MikesPaging.AspNetCore</PackageId>
+    <Title>MikesPaging.AspNetCore</Title>
+    <Authors>Mike Vazovsk1y</Authors>
+    <Description>Simple library for adding paging, sorting and filtering to ASP.NET applications.</Description>
+    <RepositoryUrl>https://github.com/Vazovsk1y/MikesPaging</RepositoryUrl>
+	<IncludeSymbols>true</IncludeSymbols>
+	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	<Version>1.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -2,7 +2,6 @@
 using MikesPaging.AspNetCore.Common;
 using MikesPaging.AspNetCore.Common.Enums;
 using MikesPaging.AspNetCore.Common.ViewModels;
-using MikesPaging.AspNetCore.UnitTests.Models;
 
 namespace MikesPaging.AspNetCore.UnitTests.Mapper;
 
@@ -16,7 +15,11 @@ public class MapperTests
 
     private readonly static string[] _operators = Enum.GetNames<FilteringOperators>().Select(e => e.ToString()).ToArray();
 
-    private readonly static string[] _values = 
+    private static readonly string[] AllowedNamesForSorting = SortingEnum.Enumerate<SortingEnumForMapperTests>().SelectMany(e => e.AllowedNames).ToArray();
+
+    private static readonly string[] AllowedNamesForFiltering = FilteringEnum.Enumerate<FilteringEnumForMapperTests>().SelectMany(e => e.AllowedNames).ToArray();
+
+    private readonly static string?[] _values = 
     [
         DateTimeOffset.UtcNow.ToString(),
         3.ToString(),
@@ -26,6 +29,9 @@ public class MapperTests
         (-5).ToString(),
         DateTime.UtcNow.ToString(),
         true.ToString(),
+        null,
+        string.Empty,
+        "              "
     ];
 
     public static TheoryData<PagingOptionsModel> ValidPagingOptionsModels { get; } = new()
@@ -49,25 +55,25 @@ public class MapperTests
     [
         // (null or empty string passed)
         new(string.Empty, "age"),
-        new(_descending, string.Empty),
+        new(Extensions.PickRandom(_and, _or), string.Empty),
         new("       ", "age"),
-        new(_ascending, "        "),
+        new(Extensions.PickRandom(_and, _or), "        "),
         new(null, null),
         new(string.Empty, string.Empty),
-        new(_ascending, null),
+        new(Extensions.PickRandom(_and, _or), null),
         new(null, "age"),
 
         // (passed wrong sortDirection or filterBy)
-        new("asc", AllowedTestEntityNames.All.GetRandom()),
-        new("desc", AllowedTestEntityNames.All.GetRandom()),
-        new("decending", AllowedTestEntityNames.All.GetRandom()),
-        new("acending", AllowedTestEntityNames.All.GetRandom()),
-        new(_ascending, "agy"),
-        new(_descending, "ceated"),
-        new(_ascending, "fulName"),
-        new(_descending, "frstName"),
-        new(_ascending, "lst_name"),
-        new(_descending, "created_ate")
+        new("asc", AllowedNamesForSorting.GetRandom()),
+        new("desc", AllowedNamesForSorting.GetRandom()),
+        new("decending", AllowedNamesForSorting.GetRandom()),
+        new("acending", AllowedNamesForSorting.GetRandom()),
+        new(Extensions.PickRandom(_and, _or), "agy"),
+        new(Extensions.PickRandom(_and, _or), "ceated"),
+        new(Extensions.PickRandom(_and, _or), "fulName"),
+        new(Extensions.PickRandom(_and, _or), "frstName"),
+        new(Extensions.PickRandom(_and, _or), "lst_name"),
+        new(Extensions.PickRandom(_and, _or), "created_ate")
     ];
 
     public static TheoryData<SortingOptionsModel> ValidSortingOptionsModels
@@ -75,7 +81,7 @@ public class MapperTests
         get
         {
             var result = new TheoryData<SortingOptionsModel>();
-            foreach (var allowedName in AllowedTestEntityNames.All)
+            foreach (var allowedName in AllowedNamesForSorting)
             {
                 result.Add(new SortingOptionsModel(Extensions.PickRandom(_ascending, _descending), allowedName));
             }
@@ -87,18 +93,26 @@ public class MapperTests
     public static TheoryData<FilteringOptionsModel> InvalidFilteringOptionsModels { get; } =
     [
         // invalid (bad data passed)
-        new([], string.Empty),
-        new(null, _or),
-        new([ new (string.Empty, null, string.Empty) ], "       "),
-        new([ new (string.Empty, string.Empty, string.Empty) ], null),
-        new([new("     ", null, string.Empty), new ("", "25", "notEqual")], string.Empty),
-        new([new("fda", null, "randomString")], _and),
-        new([new(null, null, null)], null),
-        new([null, null, null], null),
-        new([new(AllowedTestEntityNames.All.GetRandom(), "25", "fdafdsafdsa")], null),
+        new([], Extensions.PickRandom(_and, _or)),
+        new(null, Extensions.PickRandom(_and, _or)),
+        new([null], Extensions.PickRandom(_or, _and)),
+
+        new([ new (string.Empty, _values.GetRandom(), _operators.GetRandom()) ], Extensions.PickRandom(_and, _or)),
+        new([new(null, _values.GetRandom(), _operators.GetRandom())], Extensions.PickRandom(_and, _or)),
+        new([new("            ", _values.GetRandom(), _operators.GetRandom())], Extensions.PickRandom(_and, _or)),
+        new([new("invalidFilterByString", _values.GetRandom(), _operators.GetRandom())], Extensions.PickRandom(_and, _or)),
+
+        new([new(AllowedNamesForFiltering.GetRandom(), _values.GetRandom(), string.Empty)], Extensions.PickRandom(_or, _and)),
+        new([new(AllowedNamesForFiltering.GetRandom(), _values.GetRandom(), null)], Extensions.PickRandom(_or, _and)),
+        new([new(AllowedNamesForFiltering.GetRandom(), _values.GetRandom(), "          ")], Extensions.PickRandom(_or, _and)),
+
+
+        new([new(FilteringEnumForMapperTests.ByAge.PropertyName, _values.GetRandom(), "notEqual")], null),
+        new([new(FilteringEnumForMapperTests.ByAge.PropertyName, _values.GetRandom(), "notEqual")], string.Empty),
+        new([new(FilteringEnumForMapperTests.ByAge.PropertyName, _values.GetRandom(), "notEqual")], "             "),
 
         // invalid (contains duplicates)
-        new([new ("first_name", "value", "notEqual"), new("first_name", "value", "notEqual")], _or),
+        new([new ("first_name", "value", "notEqual"), new("first_name", "value", "notEqual")], Extensions.PickRandom(_and, _or)),
 
         // inapplicable operator passed
         new([new (
@@ -117,7 +131,14 @@ public class MapperTests
                 var filters = new List<FilterModel>();
                 for (int j = 0; j < Random.Shared.Next(1, 5); j++)
                 {
-                    var filter = new FilterModel(AllowedTestEntityNames.All.GetRandom(), _values.GetRandom(), _operators.GetRandom());
+                    var filterBy = AllowedNamesForFiltering.GetRandom();
+                    var @operator = _operators
+                        .Except(FilteringEnum.FindFirstOrDefault<FilteringEnumForMapperTests>(filterBy)!
+                              .InapplicableOperators
+                              .Select(e => e.ToString()), StringComparer.OrdinalIgnoreCase)
+                        .GetRandom();
+
+                    var filter = new FilterModel(filterBy, _values.GetRandom(), @operator);
                     if (!filters.Contains(filter))
                     {
                         filters.Add(filter);
@@ -130,9 +151,6 @@ public class MapperTests
 
                 result.Add(model);
             }
-
-            // empty string is allowed value
-            result.Add(new([new(AllowedTestEntityNames.All.GetRandom(), string.Empty, _operators.GetRandom())], _or));
 
             return result;
         }

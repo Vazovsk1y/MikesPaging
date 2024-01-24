@@ -7,5 +7,5 @@ public record Filter<TFilterBy>(
     TFilterBy FilterBy,
     [property: JsonConverter(typeof(JsonStringEnumConverter))]
     FilteringOperators Operator, 
-    string Value)
+    string? Value)
     where TFilterBy : FilteringEnum;

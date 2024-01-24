@@ -28,14 +28,14 @@ public class DefaultFilteringManagerTests
         // invalid
         new(null, Extensions.PickRandom(Logic.And, Logic.Or)),
         new([ ], Extensions.PickRandom(Logic.And, Logic.Or)),
-        
+        new([null], Extensions.PickRandom(Logic.And, Logic.Or)),
+
+
         new([new (TestEntityFilteringEnum.ByAge, FilteringOperators.NotEqual, "1"), 
              new(TestEntityFilteringEnum.ByAge, FilteringOperators.NotEqual, "1")],        // duplicates in filters
             Extensions.PickRandom(Logic.And, Logic.Or)),                                    
 
-        new([ null ], Extensions.PickRandom(Logic.And, Logic.Or)),
         new([new(null, FilteringOperators.NotEqual, "1")], Extensions.PickRandom(Logic.And, Logic.Or)),
-        new([new (TestEntityFilteringEnum.ByAge, FilteringOperators.NotEqual, null)], Extensions.PickRandom(Logic.And, Logic.Or)),
 
         // inapplicable filters
         new([new(TestEntityFilteringEnum.ByAge, FilteringOperators.NotEqual, "notIntNumber")], Extensions.PickRandom(Logic.And, Logic.Or)),
@@ -43,6 +43,8 @@ public class DefaultFilteringManagerTests
 
         new([new(TestEntityFilteringEnum.ByAge, StringOperators.GetRandom(), "1")], Extensions.PickRandom(Logic.And, Logic.Or)),
         new([new(TestEntityFilteringEnum.ByFirstName, ComparableOperators.GetRandom(), "anySearchTerm")], Extensions.PickRandom(Logic.And, Logic.Or)),
+
+        new([new(TestEntityFilteringEnum.ByAge, TestEntityFilteringEnum.ByAge.InapplicableOperators.GetRandom(), "1")], Extensions.PickRandom(Logic.And, Logic.Or)),
     ];
 
     [Fact]

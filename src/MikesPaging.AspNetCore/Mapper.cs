@@ -67,11 +67,6 @@ public static class Mapper
             return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.ValueCannotBeNull("Filter"));
         }
 
-        if (filteringOptionsModel.Filters.Any(e => e.Value is null))
-        {
-            return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.ValueCannotBeNull("Filter value"));
-        }
-
         var logicParsingRes = Enum.TryParse<Logic>(filteringOptionsModel.Logic, true, out var logic);
         if (!logicParsingRes)
         {
@@ -96,9 +91,9 @@ public static class Mapper
         var result = new List<Filter<T>>();
         foreach (var item in filtersModels)
         {
-            if (item.Value is null)
+            if (string.IsNullOrWhiteSpace(item.FilterBy))
             {
-                return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.ValueCannotBeNull("Filter value"));
+                return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.ValueCannotBeNullOrEmpty("Filter by"));
             }
 
             var filterBy = FilteringEnum.FindFirstOrDefault<T>(item.FilterBy);

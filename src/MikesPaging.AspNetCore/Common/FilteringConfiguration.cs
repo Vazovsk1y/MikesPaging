@@ -8,10 +8,10 @@ namespace MikesPaging.AspNetCore.Common;
 public abstract class FilteringConfiguration<TSource, TFilterBy> : IFilteringConfiguration<TSource, TFilterBy> 
     where TFilterBy : FilteringEnum
 {
-    private readonly Dictionary<FilterKey<TFilterBy>, Func<string, Expression<Func<TSource, bool>>>> _filters = [];
-    public IReadOnlyDictionary<FilterKey<TFilterBy>, Func<string, Expression<Func<TSource, bool>>>> Filters => _filters.AsReadOnly();
+    private readonly Dictionary<FilterKey<TFilterBy>, Func<string?, Expression<Func<TSource, bool>>>> _filters = [];
+    public IReadOnlyDictionary<FilterKey<TFilterBy>, Func<string?, Expression<Func<TSource, bool>>>> Filters => _filters.AsReadOnly();
 
-    protected void RuleFor(TFilterBy filterBy, FilteringOperators @operator, Func<string, Expression<Func<TSource, bool>>> value)
+    protected void RuleFor(TFilterBy filterBy, FilteringOperators @operator, Func<string?, Expression<Func<TSource, bool>>> value)
     {
         FilteringException.ThrowIf(filterBy is null, Errors.ValueCannotBeNull("Filter by"));
         FilteringException.ThrowIf(value is null, Errors.ValueCannotBeNull("Filtering delegate"));

@@ -11,4 +11,6 @@ internal class TestEntity
     public required DateTimeOffset Created { get; init; }
 
     public required uint Age { get; init; }
+
+    public uint? IQ { get; set; }
 }

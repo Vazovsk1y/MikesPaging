@@ -103,28 +103,35 @@ public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory servic
         }
 
         var property = Expression.Property(parameter, filter.FilterBy.PropertyName);
-        var convertionResult = TypeDescriptor.GetConverter(property.Type).ConvertFromInvariantString(filter.Value) 
-            ?? throw new InvalidCastException($"Unable convert filter value {filter.Value} to {property.Type.Name} property type.");
+        var convertedProperty = Expression.Convert(property, property.Type);
 
-        var constant = Expression.Constant(convertionResult);
+        var convertedFilterValue = filter.Value is null ?
+            null
+            :
+            TypeDescriptor.GetConverter(convertedProperty.Type).ConvertFromInvariantString(filter.Value)
+            ?? throw new InvalidCastException($"Unable convert filter value {filter.Value} to {convertedProperty.Type.Name} property type.");
+
+        var constant = Expression.Constant(convertedFilterValue);
+        var convertedConstant = Expression.Convert(constant, convertedProperty.Type);
+
         switch (filter.Operator)
         {
             case FilteringOperators.NotEqual:
-                return Expression.NotEqual(property, constant);
+                return Expression.NotEqual(convertedProperty, convertedConstant);
             case FilteringOperators.LessThanOrEqual:
-                return Expression.LessThanOrEqual(property, constant);
+                return Expression.LessThanOrEqual(convertedProperty, convertedConstant);
             case FilteringOperators.GreaterThanOrEqual:
-                return Expression.GreaterThanOrEqual(property, constant);
+                return Expression.GreaterThanOrEqual(convertedProperty, convertedConstant);
             case FilteringOperators.LessThan:
-                return Expression.LessThan(property, constant);
+                return Expression.LessThan(convertedProperty, convertedConstant);
             case FilteringOperators.GreaterThan:
-                return Expression.GreaterThan(property, constant);
+                return Expression.GreaterThan(convertedProperty, convertedConstant);
             case FilteringOperators.Contains:
                 var containsMethod = typeof(string).GetMethod(nameof(string.Contains), [typeof(string)]);
-                return Expression.Call(property, containsMethod!, constant);
+                return Expression.Call(convertedProperty, containsMethod!, convertedConstant);
             case FilteringOperators.StartsWith:
                 var startsWithMethod = typeof(string).GetMethod(nameof(string.StartsWith), [typeof(string)]);
-                return Expression.Call(property, startsWithMethod!, constant);
+                return Expression.Call(convertedProperty, startsWithMethod!, convertedConstant);
             default:
                 throw new KeyNotFoundException($"Unsupported operator: [{filter.Operator}]."); ;
         }
@@ -137,6 +144,5 @@ public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory servic
         FilteringException.ThrowIf(filteringOptions.Filters!.Distinct().Count() != filteringOptions.Filters!.Count, Errors.Filtering.FiltersCollectionCannotContainDuplicates);
         FilteringException.ThrowIf(filteringOptions.Filters.Any(e => e is null), Errors.ValueCannotBeNull("Filter"));
         FilteringException.ThrowIf(filteringOptions.Filters.Any(e => e.FilterBy is null), Errors.ValueCannotBeNull("Filter by property"));
-        FilteringException.ThrowIf(filteringOptions.Filters.Any(e => e.Value is null), Errors.ValueCannotBeNull("Filter value"));
     }
 }

@@ -196,7 +196,7 @@ public class MapperTests
     {
         bool expected = true;
         var expectedValue = new SortingOptions<SortingEnumForMapperTests>(
-            Enum.Parse<SortDirections>(sortingOptionsModel.SortDirection, true),
+            Enum.Parse<SortingDirections>(sortingOptionsModel.SortDirection, true),
             SortingEnum.FindFirstOrDefault<SortingEnumForMapperTests>(sortingOptionsModel.SortBy) ?? throw new InvalidOperationException("Sort by property not found."));
 
         var result = sortingOptionsModel.ToOptions<SortingEnumForMapperTests>();

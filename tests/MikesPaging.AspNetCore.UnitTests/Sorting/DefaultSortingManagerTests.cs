@@ -13,9 +13,9 @@ public class DefaultSortingManagerTests
 {
     public static TheoryData<SortingOptions<TestEntitySortingEnum>> InvalidSortingOptions { get; } =
     [
-        new (SortDirections.Descending, null),
-        new (SortDirections.Ascending, TestEntitySortingEnum.ByAgeButWithInvalidPropertyName),
-        new (SortDirections.Descending, TestEntitySortingEnum.ByAgeButWithInvalidPropertyName),
+        new (SortingDirections.Descending, null),
+        new (SortingDirections.Ascending, TestEntitySortingEnum.ByAgeButWithInvalidPropertyName),
+        new (SortingDirections.Descending, TestEntitySortingEnum.ByAgeButWithInvalidPropertyName),
     ];
     
     [Fact]
@@ -46,7 +46,7 @@ public class DefaultSortingManagerTests
             data[1].Id 
         };
 
-        var sortingOptions = new SortingOptions<TestEntitySortingEnum>(SortDirections.Ascending, TestEntitySortingEnum.ByAge);
+        var sortingOptions = new SortingOptions<TestEntitySortingEnum>(SortingDirections.Ascending, TestEntitySortingEnum.ByAge);
 
         // act 
         var result = manager.ApplySorting(data.AsQueryable(), sortingOptions);
@@ -70,7 +70,7 @@ public class DefaultSortingManagerTests
             data[2].Id
         };
 
-        var sortingOptions = new SortingOptions<TestEntitySortingEnum>(SortDirections.Descending, TestEntitySortingEnum.ByAge);
+        var sortingOptions = new SortingOptions<TestEntitySortingEnum>(SortingDirections.Descending, TestEntitySortingEnum.ByAge);
 
         // act 
         var result = manager.ApplySorting(data.AsQueryable(), sortingOptions);

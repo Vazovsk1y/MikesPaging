@@ -1,6 +1,6 @@
 ﻿namespace MikesPaging.AspNetCore.Common.Enums;
 
-public enum SortDirections
+public enum SortingDirections
 {
     Ascending,
     Descending,

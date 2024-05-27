@@ -1,5 +1,3 @@
-Here are the corrected spelling errors and mistranslations:
-
 # MikesPaging.AspNetCore
 
 MikesPaging.AspNetCore is a simple library for implementing paging, sorting, and filtering functionality in your ASP.NET applications.

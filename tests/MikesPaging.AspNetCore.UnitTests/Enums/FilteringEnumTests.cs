@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using MikesPaging.AspNetCore.Common;
 using MikesPaging.AspNetCore.Common.Enums;
+using MikesPaging.AspNetCore.UnitTests.Enums.Models;
 
 namespace MikesPaging.AspNetCore.UnitTests.Enums;
 
@@ -52,49 +53,49 @@ public class FilteringEnumTests
     };
 
     [Fact]
-    public void Ctor_Should_Throw_TypeInitializationException_when_empty_string_passed_to_property_name()
+    public void Ctor_Should_Throw_TypeInitializationException_WHEN_empty_string_passed_to_propertyName()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesFilteringEnum.EmptyStringPassedToPropertyName);
     }
 
     [Fact]
-    public void Ctor_Should_Throw_TypeInitializationException_when_null_passed_to_property_name()
+    public void Ctor_Should_Throw_TypeInitializationException_WHEN_null_passed_to_propertyName()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesFilteringEnum.NullPassedToPropertyName);
     }
 
     [Fact]
-    public void Ctor_Should_Throw_TypeInitializationException_when_null_passed_to_allowed_names()
+    public void Ctor_Should_Throw_TypeInitializationException_WHEN_null_passed_to_allowedNames()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesFilteringEnum.NullPassedToAllowedNames);
     }
-
+    
     [Fact]
-    public void Ctor_Should_Throw_TypeInitializationException_when_duplicates_in_allowed_names()
-    {
-        Assert.Throws<TypeInitializationException>(() => InvalidValuesFilteringEnum.DuplicatesInAllowedNames);
-    }
-
-    [Fact]
-    public void Ctor_Should_Throw_TypeInitializationException_when_empty_collection_passed_to_allowed_names()
+    public void Ctor_Should_Throw_TypeInitializationException_WHEN_empty_collection_passed_to_allowedNames()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesFilteringEnum.EmptyCollectionPassedToAllowedNames);
     }
 
     [Fact]
-    public void Ctor_Should_Throw_TypeInitializationException_when_empty_string_contains_in_allowed_names()
+    public void Ctor_Should_Throw_TypeInitializationException_WHEN_allowedNames_contains_duplicates()
+    {
+        Assert.Throws<TypeInitializationException>(() => InvalidValuesFilteringEnum.DuplicatesInAllowedNames);
+    }
+
+    [Fact]
+    public void Ctor_Should_Throw_TypeInitializationException_WHEN_allowedNames_contains_empty_string()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesFilteringEnum.EmptyStringContainsInAllowedNames);
     }
 
     [Fact]
-    public void Ctor_Should_Throw_TypeInitializationException_when_null_contains_in_allowed_names()
+    public void Ctor_Should_Throw_TypeInitializationException_WHEN_allowedNames_contains_null()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesFilteringEnum.NullContainsInAllowedNames);
     }
 
     [Fact]
-    public void Ctor_Should_Throw_TypeInitializationException_when_duplicates_in_inapplicable_operators()
+    public void Ctor_Should_Throw_TypeInitializationException_WHEN_inapplicableOperators_contains_duplicates()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesFilteringEnum.DuplicatesInInapplicableOperators);
     }
@@ -102,7 +103,13 @@ public class FilteringEnumTests
     [Fact]
     public void Enumerate_Should_Return_Only_Public_Or_Internal_Static_Readonly_Fields_and_NOT_null_values()
     {
-        var expected = new[] { TestFilteringEnum.ByFirstName, TestFilteringEnum.ByLastNameInternalField, TestFilteringEnum.ByLastName, TestFilteringEnum.ByAnyPropertyCaseSensitive };
+        var expected = new[]
+        {
+            TestFilteringEnum.ByFirstName, 
+            TestFilteringEnum.ByLastNameInternalField, 
+            TestFilteringEnum.ByLastName,
+            TestFilteringEnum.ByAnyPropertyCaseSensitive
+        };
 
         var result = FilteringEnum.Enumerate<TestFilteringEnum>();
 
@@ -110,7 +117,7 @@ public class FilteringEnumTests
     }
 
     [Fact]
-    public void FindFirstOrDefault_Should_Return_The_Same_Value_regardless_of_which_case_searchTerm_was_passed_when_case_ignore_configured_to_true()
+    public void FindFirstOrDefault_Should_Return_The_Same_Value_regardless_of_which_case_searchTerm_was_passed_when_case_ignore_configured_to_TRUE()
     {
         var expected = TestFilteringEnum.ByLastName;
         string searchTerm = expected.AllowedNames.GetRandom();
@@ -126,7 +133,7 @@ public class FilteringEnumTests
     }
 
     [Fact]
-    public void FindFirstOrDefault_Should_Return_Null_when_searchTerm_case_was_changed_and_case_ignore_configured_to_false()
+    public void FindFirstOrDefault_Should_Return_Null_when_searchTerm_case_was_changed_and_case_ignore_configured_to_FALSE()
     {
         var expected = TestFilteringEnum.ByAnyPropertyCaseSensitive;
         string searchTerm = expected.AllowedNames.GetRandom();

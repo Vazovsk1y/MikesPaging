@@ -1,4 +1,5 @@
-﻿using MikesPaging.AspNetCore.Exceptions.Base;
+﻿using System.Diagnostics.CodeAnalysis;
+using MikesPaging.AspNetCore.Exceptions.Base;
 
 namespace MikesPaging.AspNetCore.Exceptions;
 
@@ -12,7 +13,7 @@ public class PagingException : MikesPagingException
     {
 
     }
-    internal new static void ThrowIf(bool condition, string? message)
+    internal new static void ThrowIf([DoesNotReturnIf(true)]bool condition, string? message)
     {
         if (condition)
         {
@@ -20,7 +21,7 @@ public class PagingException : MikesPagingException
         }
     }
 
-    internal new static void ThrowIf(bool condition, string? message, Exception? inner)
+    internal new static void ThrowIf([DoesNotReturnIf(true)]bool condition, string? message, Exception? inner)
     {
         if (condition)
         {

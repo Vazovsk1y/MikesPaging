@@ -1,6 +1,7 @@
 ﻿using MikesPaging.AspNetCore.Common;
+using MikesPaging.WebApi.Models;
 
-namespace MikesPaging.WebApi.Models;
+namespace MikesPaging.WebApi.Infrastructure;
 
 public sealed class UsersSortingProperties : SortingEnum
 {

@@ -1,11 +1,13 @@
-﻿namespace MikesPaging.AspNetCore.Exceptions.Base;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace MikesPaging.AspNetCore.Exceptions.Base;
 
 public class MikesPagingException : Exception
 {
     internal MikesPagingException(string? message) : base(message) { }
     internal MikesPagingException(string? message, Exception? inner) : base(message, inner) { }
 
-    internal static void ThrowIf(bool condition, string? message)
+    internal static void ThrowIf([DoesNotReturnIf(true)]bool condition, string? message)
     {
         if (condition)
         {
@@ -13,7 +15,7 @@ public class MikesPagingException : Exception
         }
     }
 
-    internal static void ThrowIf(bool condition, string? message, Exception? inner)
+    internal static void ThrowIf([DoesNotReturnIf(true)]bool condition, string? message, Exception? inner)
     {
         if (condition)
         {

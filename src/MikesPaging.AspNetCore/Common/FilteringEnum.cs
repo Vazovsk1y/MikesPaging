@@ -1,6 +1,7 @@
 ﻿using MikesPaging.AspNetCore.Common.Enums;
 using MikesPaging.AspNetCore.Exceptions;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace MikesPaging.AspNetCore.Common;
 
@@ -12,6 +13,8 @@ public abstract class FilteringEnum : MikesPagingEnum
     /// <summary>
     /// Gets the collection of operators that are not applicable to this filtering criterion.
     /// </summary>
+    /// 
+    [JsonConverter(typeof(JsonReadOnlyCollectionItemConverter<FilteringOperators, JsonStringEnumConverter>))]
     public IReadOnlyCollection<FilteringOperators> InapplicableOperators { get; }
 
     /// <summary>

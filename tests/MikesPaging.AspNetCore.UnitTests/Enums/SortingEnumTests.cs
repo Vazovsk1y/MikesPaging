@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using MikesPaging.AspNetCore.Common;
+using MikesPaging.AspNetCore.UnitTests.Enums.Models;
 
 namespace MikesPaging.AspNetCore.UnitTests.Enums;
 
@@ -20,43 +21,43 @@ public class SortingEnumTests
     };
 
     [Fact]
-    public void Ctor_Should_Throw_TypeInitializationException_when_empty_string_passed_to_property_name()
+    public void Ctor_Should_Throw_TypeInitializationException_WHEN_empty_string_passed_to_propertyName()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.EmptyStringPassedToPropertyName);
     }
 
     [Fact]
-    public void Ctor_Should_Throw_TypeInitializationException_when_null_passed_to_property_name()
+    public void Ctor_Should_Throw_TypeInitializationException_WHEN_null_passed_to_propertyName()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.NullPassedToPropertyName);
     }
 
     [Fact]
-    public void Ctor_Should_Throw_TypeInitializationException_when_null_passed_to_allowed_names()
+    public void Ctor_Should_Throw_TypeInitializationException_WHEN_null_passed_to_allowedNames()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.NullPassedToAllowedNames);
     }
 
     [Fact]
-    public void Ctor_Should_Throw_TypeInitializationException_when_duplicates_in_allowed_names()
+    public void Ctor_Should_Throw_TypeInitializationException_WHEN_empty_collection_passed_to_allowedNames()
+    {
+        Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.EmptyCollectionPassedToAllowedNames);
+    }
+    
+    [Fact]
+    public void Ctor_Should_Throw_TypeInitializationException_WHEN_allowedNames_contains_duplicates()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.DuplicatesInAllowedNames);
     }
 
     [Fact]
-    public void Ctor_Should_Throw_TypeInitializationException_when_empty_collection_passed_to_allowed_names()
-    {
-        Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.EmptyCollectionPassedToAllowedNames);
-    }
-
-    [Fact]
-    public void Ctor_Should_Throw_TypeInitializationException_when_empty_string_contains_in_allowed_names()
+    public void Ctor_Should_Throw_TypeInitializationException_WHEN_allowedNames_contains_empty_string()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.EmptyStringContainsInAllowedNames);
     }
 
     [Fact]
-    public void Ctor_Should_Throw_TypeInitializationException_when_null_contains_in_allowed_names()
+    public void Ctor_Should_Throw_TypeInitializationException_WHEN_allowedNames_contains_null()
     {
         Assert.Throws<TypeInitializationException>(() => InvalidValuesSortingEnum.NullContainsInAllowedNames);
     }

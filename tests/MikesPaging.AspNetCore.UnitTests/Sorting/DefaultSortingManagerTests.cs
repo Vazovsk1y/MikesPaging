@@ -19,7 +19,7 @@ public class DefaultSortingManagerTests
     ];
     
     [Fact]
-    public void ApplySorting_Should_Return_The_Same_Collection_when_null_passed_to_sorting_options()
+    public void ApplySorting_Should_Return_The_Same_Collection_WHEN_null_passed_to_sorting_options()
     {
         // arrange
         var manager = CreateSortingManager<TestEntity>();
@@ -34,7 +34,7 @@ public class DefaultSortingManagerTests
     }
 
     [Fact]
-    public void ApplySorting_Should_Return_Sorted_In_Ascending_Order_Collection_when_sorting_options_sort_direction_property_set_to_ascending()
+    public void ApplySorting_Should_Return_Sorted_In_Ascending_Order_Collection_WHEN_sorting_options_sort_direction_property_set_to_ASCENDING()
     {
         // arrange
         var manager = CreateSortingManager<TestEntity>();
@@ -58,7 +58,7 @@ public class DefaultSortingManagerTests
     }
 
     [Fact]
-    public void ApplySorting_Should_Return_Sorted_In_Descending_Order_Collection_when_sorting_options_sort_direction_property_set_to_descending()
+    public void ApplySorting_Should_Return_Sorted_In_Descending_Order_Collection_WHEN_sorting_options_sort_direction_property_set_to_DESCENDING()
     {
         // arrange
         var manager = CreateSortingManager<TestEntity>();
@@ -83,7 +83,7 @@ public class DefaultSortingManagerTests
 
     [Theory]
     [MemberData(nameof(InvalidSortingOptions))]
-    public void ApplySorting_Should_Throw_SortingException_when_invalid_sorting_options_passed(SortingOptions<TestEntitySortingEnum> sortingOptions)
+    public void ApplySorting_Should_Throw_SortingException_WHEN_invalid_sorting_options_passed(SortingOptions<TestEntitySortingEnum> sortingOptions)
     {
         // arrange
         var manager = CreateSortingManager<TestEntity>();

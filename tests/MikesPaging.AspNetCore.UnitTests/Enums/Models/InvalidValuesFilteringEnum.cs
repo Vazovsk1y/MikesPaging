@@ -1,7 +1,7 @@
 ﻿using MikesPaging.AspNetCore.Common;
 using MikesPaging.AspNetCore.Common.Enums;
 
-namespace MikesPaging.AspNetCore.UnitTests.Enums;
+namespace MikesPaging.AspNetCore.UnitTests.Enums.Models;
 
 public class InvalidValuesFilteringEnum : FilteringEnum
 {

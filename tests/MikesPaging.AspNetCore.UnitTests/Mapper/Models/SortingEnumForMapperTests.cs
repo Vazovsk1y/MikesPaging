@@ -1,7 +1,7 @@
 ﻿using MikesPaging.AspNetCore.Common;
 using MikesPaging.AspNetCore.UnitTests.Models;
 
-namespace MikesPaging.AspNetCore.UnitTests.Mapper;
+namespace MikesPaging.AspNetCore.UnitTests.Mapper.Models;
 
 public class SortingEnumForMapperTests : SortingEnum
 {

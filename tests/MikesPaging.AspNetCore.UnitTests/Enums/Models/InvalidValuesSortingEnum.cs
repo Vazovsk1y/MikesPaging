@@ -1,7 +1,7 @@
 ﻿using MikesPaging.AspNetCore.Common;
 using MikesPaging.AspNetCore.UnitTests.Mapper;
 
-namespace MikesPaging.AspNetCore.UnitTests.Enums;
+namespace MikesPaging.AspNetCore.UnitTests.Enums.Models;
 
 internal class InvalidValuesSortingEnum : SortingEnum
 {

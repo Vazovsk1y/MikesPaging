@@ -35,7 +35,7 @@ public class DefaultPagingManagerTests
     }
 
     [Fact]
-    public void ApplyPaging_Should_Return_The_Same_Collection_when_null_passed_to_paging_options()
+    public void ApplyPaging_Should_Return_The_Same_Collection_WHEN_null_passed_to_paging_options()
     {
         // Arrange
         var pagingManager = CreatePagingManager<TestEntity>();
@@ -55,7 +55,7 @@ public class DefaultPagingManagerTests
     [InlineData(10, -1)]
     [InlineData(0, 0)]
     [InlineData(-1, -1)]
-    public void ApplyPaging_Should_Throw_PagingException_when_invalid_paging_options_passed(int pageIndex, int pageSize)
+    public void ApplyPaging_Should_Throw_PagingException_WHEN_invalid_paging_options_passed(int pageIndex, int pageSize)
     {
         // Arrange
         var invalidPagingOptions = new PagingOptions(pageIndex, pageSize);

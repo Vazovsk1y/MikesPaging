@@ -2,6 +2,7 @@
 using MikesPaging.AspNetCore.Common;
 using MikesPaging.AspNetCore.Common.Enums;
 using MikesPaging.AspNetCore.Common.ViewModels;
+using MikesPaging.AspNetCore.UnitTests.Mapper.Models;
 
 namespace MikesPaging.AspNetCore.UnitTests.Mapper;
 
@@ -158,7 +159,7 @@ public class MapperTests
 
     [Theory]
     [MemberData(nameof(ValidPagingOptionsModels))]
-    public void ToPagingOptions_Should_Return_Success_Result_when_valid_data_passed(PagingOptionsModel pagingOptionsModel)
+    public void ToPagingOptions_Should_Return_Success_Result_WHEN_valid_data_passed(PagingOptionsModel pagingOptionsModel)
     {
         var expected = true;
         var expectedValue = new PagingOptions(pagingOptionsModel.PageIndex, pagingOptionsModel.PageSize);
@@ -171,7 +172,7 @@ public class MapperTests
 
     [Theory]
     [MemberData(nameof(InvalidPagingOptionsModels))]
-    public void ToPagingOptions_Should_Return_Failure_Result_when_invalid_data_passed(PagingOptionsModel pagingOptionsModel)
+    public void ToPagingOptions_Should_Return_Failure_Result_WHEN_invalid_data_passed(PagingOptionsModel pagingOptionsModel)
     {
         var expected = false;
 
@@ -182,7 +183,7 @@ public class MapperTests
 
     [Theory]
     [MemberData(nameof(InvalidSortingOptionsModels))]
-    public void ToSortingOptions_Should_Return_Failure_Result_when_invalid_data_passed(SortingOptionsModel sortingOptionsModel)
+    public void ToSortingOptions_Should_Return_Failure_Result_WHEN_invalid_data_passed(SortingOptionsModel sortingOptionsModel)
     {
         bool expected = false;
         var result = sortingOptionsModel.ToOptions<SortingEnumForMapperTests>();
@@ -192,7 +193,7 @@ public class MapperTests
 
     [Theory]
     [MemberData(nameof(ValidSortingOptionsModels))]
-    public void ToSortingOptions_Should_Return_Success_Result_when_valid_data_passed(SortingOptionsModel sortingOptionsModel)
+    public void ToSortingOptions_Should_Return_Success_Result_WHEN_valid_data_passed(SortingOptionsModel sortingOptionsModel)
     {
         bool expected = true;
         var expectedValue = new SortingOptions<SortingEnumForMapperTests>(
@@ -207,7 +208,7 @@ public class MapperTests
 
     [Theory]
     [MemberData(nameof(InvalidFilteringOptionsModels))]
-    public void ToFilteringOptions_Should_Return_Failure_Result_when_invalid_data_passed(FilteringOptionsModel filteringOptionsModel)
+    public void ToFilteringOptions_Should_Return_Failure_Result_WHEN_invalid_data_passed(FilteringOptionsModel filteringOptionsModel)
     {
         var expected = false;
 
@@ -218,7 +219,7 @@ public class MapperTests
 
     [Theory]
     [MemberData(nameof(ValidFilteringOptionsModels))]
-    public void ToFilteringOptions_Should_Return_Success_Result_when_valid_data_passed(FilteringOptionsModel model)
+    public void ToFilteringOptions_Should_Return_Success_Result_WHEN_valid_data_passed(FilteringOptionsModel model)
     {
         var expected = true;
         var expectedValue = new FilteringOptions<FilteringEnumForMapperTests>(

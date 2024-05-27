@@ -8,11 +8,12 @@
 	<PackageId>MikesPaging.AspNetCore</PackageId>
     <Title>MikesPaging.AspNetCore</Title>
     <Authors>Mike Vazovsk1y</Authors>
-    <Description>Simple library for adding paging, sorting and filtering to ASP.NET applications.</Description>
+    <Description>Library for paging, sorting and filtering in ASP.NET applications.</Description>
     <RepositoryUrl>https://github.com/Vazovsk1y/MikesPaging</RepositoryUrl>
 	<IncludeSymbols>true</IncludeSymbols>
+      <PackageTags>Paging;Sorting;Filtering;ASP.NET;ASP.NET Core;.NET;</PackageTags>
 	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	<Version>1.0.0</Version>
+	<Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

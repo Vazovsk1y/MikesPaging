@@ -48,7 +48,7 @@ public class DefaultFilteringManagerTests
     ];
 
     [Fact]
-    public void ApplyFiltering_Should_Return_The_Same_Collection_when_null_passed_to_filtering_options()
+    public void ApplyFiltering_Should_Return_The_Same_Collection_WHEN_null_passed_to_filteringOptions()
     {
         // arrange
         var manager = CreateFilteringManager<TestEntity>();
@@ -63,7 +63,7 @@ public class DefaultFilteringManagerTests
     }
 
     [Fact]
-    public void ApplyFiltering_Should_Return_Filtered_Collection_when_single_filter_passed()
+    public void ApplyFiltering_Should_Return_Filtered_Collection_WHEN_single_filter_passed()
     {
         // arrange
         var manager = CreateFilteringManager<TestEntity>();
@@ -86,7 +86,7 @@ public class DefaultFilteringManagerTests
     }
 
     [Fact]
-    public void ApplyFiltering_Should_Return_Filtered_Collection_when_more_than_one_filter_passed_with_OR_logic()
+    public void ApplyFiltering_Should_Return_Filtered_Collection_WHEN_more_than_one_filter_passed_with_OR_logic()
     {
         // arrange
         var manager = CreateFilteringManager<TestEntity>();
@@ -114,7 +114,7 @@ public class DefaultFilteringManagerTests
     }
 
     [Fact]
-    public void ApplyFiltering_Should_Return_Filtered_Collection_when_more_than_one_filter_passed_with_AND_logic()
+    public void ApplyFiltering_Should_Return_Filtered_Collection_WHEN_more_than_one_filter_passed_with_AND_logic()
     {
         // arrange
         var manager = CreateFilteringManager<TestEntity>();
@@ -142,7 +142,7 @@ public class DefaultFilteringManagerTests
 
     [Theory]
     [MemberData(nameof(InvalidFilteringOptions))]
-    public void ApplyFiltering_Should_Throw_FilteringException_when_invalid_filtering_options_passed(FilteringOptions<TestEntityFilteringEnum> filteringOptions)
+    public void ApplyFiltering_Should_Throw_FilteringException_WHEN_invalid_filtering_options_passed(FilteringOptions<TestEntityFilteringEnum> filteringOptions)
     {
         // arrange
         var manager = CreateFilteringManager<TestEntity>();

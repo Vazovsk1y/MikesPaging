@@ -12,8 +12,6 @@ namespace MikesPaging.AspNetCore.Services;
 
 public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory serviceScopeFactory) : IFilteringManager<TSource>
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
-
     public IQueryable<TSource> ApplyFiltering<TFilterBy>(IQueryable<TSource> source, FilteringOptions<TFilterBy>? filteringOptions) 
         where TFilterBy : FilteringEnum
     {
@@ -50,14 +48,7 @@ public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory servic
         foreach (var filter in filters)
         {
             var filterExpression = BuildFilterExpression(filter, parameter);
-            if (andExpression is null)
-            {
-                andExpression = filterExpression;
-            }
-            else
-            {
-                andExpression = Expression.AndAlso(andExpression, filterExpression);
-            }
+            andExpression = andExpression is null ? filterExpression : Expression.AndAlso(andExpression, filterExpression);
         }
 
         return Expression.Lambda<Func<TSource, bool>>(andExpression!, parameter);
@@ -72,14 +63,7 @@ public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory servic
         foreach (var filter in filters)
         {
             var filterExpression = BuildFilterExpression(filter, parameter);
-            if (orExpression is null)
-            {
-                orExpression = filterExpression;
-            }
-            else
-            {
-                orExpression = Expression.OrElse(orExpression, filterExpression);
-            }
+            orExpression = orExpression is null ? filterExpression : Expression.OrElse(orExpression, filterExpression);
         }
 
         return Expression.Lambda<Func<TSource, bool>>(orExpression!, parameter);
@@ -90,15 +74,16 @@ public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory servic
     {
         FilteringException.ThrowIf(!filter.FilterBy.IsOperatorApplicable(filter.Operator), Errors.Filtering.OperatorIsNotApplicableFor(filter.FilterBy, filter.Operator));
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactory.CreateScope();
         var configurationType = typeof(IFilteringConfiguration<,>).MakeGenericType(typeof(TSource), typeof(T));
         var configuration = scope.ServiceProvider.GetService(configurationType);
         if (configuration is IFilteringConfiguration<TSource, T> castedConfiguration)
         {
             if (castedConfiguration.Filters.TryGetValue(new FilterKey<T>(filter.FilterBy, filter.Operator), out var configuredFilter))
             {
-                return configuredFilter.Invoke(filter.Value) ?? 
-                    throw new ArgumentNullException(Errors.ValueCannotBeNull("Filter expression"));
+                var filterExpression = configuredFilter.Invoke(filter.Value);
+                ArgumentNullException.ThrowIfNull(filterExpression);
+                return filterExpression;
             }
         }
 
@@ -109,7 +94,7 @@ public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory servic
             null
             :
             TypeDescriptor.GetConverter(convertedProperty.Type).ConvertFromInvariantString(filter.Value)
-            ?? throw new InvalidCastException($"Unable convert filter value {filter.Value} to {convertedProperty.Type.Name} property type.");
+            ?? throw new InvalidCastException($"Unable convert filter value '{filter.Value}' to '{convertedProperty.Type.Name}' property type.");
 
         var constant = Expression.Constant(convertedFilterValue);
         var convertedConstant = Expression.Convert(constant, convertedProperty.Type);
@@ -140,9 +125,9 @@ public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory servic
     private static void Validate<T>(FilteringOptions<T> filteringOptions)
         where T : FilteringEnum
     {
-        FilteringException.ThrowIf(filteringOptions.Filters is null || filteringOptions.Filters.Count == 0, Errors.ValueCannotBeNullOrEmpty("Filters collection"));
-        FilteringException.ThrowIf(filteringOptions.Filters!.Distinct().Count() != filteringOptions.Filters!.Count, Errors.Filtering.FiltersCollectionCannotContainDuplicates);
-        FilteringException.ThrowIf(filteringOptions.Filters.Any(e => e is null), Errors.ValueCannotBeNull("Filter"));
-        FilteringException.ThrowIf(filteringOptions.Filters.Any(e => e.FilterBy is null), Errors.ValueCannotBeNull("Filter by property"));
+        FilteringException.ThrowIf(filteringOptions.Filters is null || filteringOptions.Filters.Count == 0, Errors.ValueCannotBeNullOrEmpty(nameof(filteringOptions.Filters)));
+        FilteringException.ThrowIf(filteringOptions.Filters.Distinct().Count() != filteringOptions.Filters!.Count, Errors.Filtering.FiltersCollectionCannotContainDuplicates);
+        FilteringException.ThrowIf(filteringOptions.Filters.Any(e => e is null), Errors.ValueCannotBeNull(nameof(Filter<T>)));
+        FilteringException.ThrowIf(filteringOptions.Filters.Any(e => e.FilterBy is null), Errors.ValueCannotBeNull(nameof(Filter<T>.FilterBy)));
     }
 }

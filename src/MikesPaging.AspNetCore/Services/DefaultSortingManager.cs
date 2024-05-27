@@ -11,8 +11,6 @@ namespace MikesPaging.AspNetCore.Services;
 
 public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFactory) : ISortingManager<TSource>
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
-
     public IQueryable<TSource> ApplySorting<TSortBy>(IQueryable<TSource> source, SortingOptions<TSortBy>? sortingOptions)
         where TSortBy : SortingEnum
     {
@@ -25,7 +23,7 @@ public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFac
 
         try
         {
-            using var scope = _serviceScopeFactory.CreateScope();
+            using var scope = serviceScopeFactory.CreateScope();
             var configurationType = typeof(ISortingConfiguration<,>).MakeGenericType(typeof(TSource), typeof(TSortBy));
             var configuration = scope.ServiceProvider.GetService(configurationType);
 
@@ -51,14 +49,14 @@ public class DefaultSortingManager<TSource>(IServiceScopeFactory serviceScopeFac
         }
     }
 
-    private static IOrderedQueryable<TSource> Sort<TBy>(IQueryable<TSource> collection, SortDirections sortDirection, Expression<Func<TSource, TBy>> expression)
+    private static IOrderedQueryable<TSource> Sort<TBy>(IQueryable<TSource> collection, SortingDirections sortDirection, Expression<Func<TSource, TBy>> expression)
     {
-        return sortDirection == SortDirections.Ascending ? collection.OrderBy(expression) : collection.OrderByDescending(expression);
+        return sortDirection == SortingDirections.Ascending ? collection.OrderBy(expression) : collection.OrderByDescending(expression);
     }
 
     private static void Validate<T>(SortingOptions<T> sortingOptions)
         where T : SortingEnum
     {
-        SortingException.ThrowIf(sortingOptions.SortBy is null, Errors.ValueCannotBeNull("Sort by"));
+        SortingException.ThrowIf(sortingOptions.SortBy is null, Errors.ValueCannotBeNull(nameof(sortingOptions.SortBy)));
     }
 }

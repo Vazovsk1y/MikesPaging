@@ -13,12 +13,10 @@ public static class Mapper
             return MappingResult<PagingOptions>.Failure(Errors.Paging.PageIndexMustBeGreaterThanZero);
         }
 
-        if (pagingOptionsModel.PageSize <= 0)
-        {
-            return MappingResult<PagingOptions>.Failure(Errors.Paging.PageSizeMustBeGreaterThanZero);
-        }
-
-        return new PagingOptions(pagingOptionsModel.PageIndex, pagingOptionsModel.PageSize);
+        return pagingOptionsModel.PageSize <= 0 ? 
+            MappingResult<PagingOptions>.Failure(Errors.Paging.PageSizeMustBeGreaterThanZero) 
+            :
+            new PagingOptions(pagingOptionsModel.PageIndex, pagingOptionsModel.PageSize);
     }
 
     public static MappingResult<SortingOptions<TSortBy>> ToOptions<TSortBy>(this SortingOptionsModel sortingOptionsModel)
@@ -26,27 +24,25 @@ public static class Mapper
     {
         if (string.IsNullOrWhiteSpace(sortingOptionsModel.SortBy))
         {
-            return MappingResult<SortingOptions<TSortBy>>.Failure(Errors.ValueCannotBeNullOrEmpty("Sort by property"));
+            return MappingResult<SortingOptions<TSortBy>>.Failure(Errors.ValueCannotBeNullOrEmpty(nameof(sortingOptionsModel.SortBy)));
         }
 
         if (string.IsNullOrWhiteSpace(sortingOptionsModel.SortDirection))
         {
-            return MappingResult<SortingOptions<TSortBy>>.Failure(Errors.ValueCannotBeNullOrEmpty("Sort direction"));
+            return MappingResult<SortingOptions<TSortBy>>.Failure(Errors.ValueCannotBeNullOrEmpty(nameof(sortingOptionsModel.SortDirection)));
         }
 
-        var sortDirectionParsingRes = Enum.TryParse<SortDirections>(sortingOptionsModel.SortDirection, true, out var sortDirection);
+        var sortDirectionParsingRes = Enum.TryParse<SortingDirections>(sortingOptionsModel.SortDirection, true, out var sortDirection);
         if (!sortDirectionParsingRes)
         {
-            return MappingResult<SortingOptions<TSortBy>>.Failure(Errors.InvalidStringValue("sort direction", sortingOptionsModel.SortDirection));
+            return MappingResult<SortingOptions<TSortBy>>.Failure(Errors.InvalidStringValue(nameof(sortingOptionsModel.SortDirection), sortingOptionsModel.SortDirection));
         }
 
         var sortBy = SortingEnum.FindFirstOrDefault<TSortBy>(sortingOptionsModel.SortBy);
-        if (sortBy is null)
-        {
-            return MappingResult<SortingOptions<TSortBy>>.Failure(Errors.InvalidStringValue("sort by", sortingOptionsModel.SortBy));
-        }
-
-        return new SortingOptions<TSortBy>(sortDirection, sortBy);
+        return sortBy is null ? 
+            MappingResult<SortingOptions<TSortBy>>.Failure(Errors.InvalidStringValue(nameof(sortingOptionsModel.SortBy), sortingOptionsModel.SortBy)) 
+            :
+            new SortingOptions<TSortBy>(sortDirection, sortBy);
     }
 
     public static MappingResult<FilteringOptions<TFilterBy>> ToOptions<TFilterBy>(this FilteringOptionsModel filteringOptionsModel)
@@ -54,12 +50,12 @@ public static class Mapper
     {
         if (string.IsNullOrWhiteSpace(filteringOptionsModel.Logic))
         {
-            return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.ValueCannotBeNullOrEmpty("Logic property"));
+            return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.ValueCannotBeNullOrEmpty(nameof(filteringOptionsModel.Logic)));
         }
 
         if (filteringOptionsModel.Filters is null || filteringOptionsModel.Filters.Count == 0)
         {
-            return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.ValueCannotBeNullOrEmpty("Filters collection"));
+            return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.ValueCannotBeNullOrEmpty(nameof(filteringOptionsModel.Filters)));
         }
 
         if (filteringOptionsModel.Filters.Any(e => e is null))
@@ -70,7 +66,7 @@ public static class Mapper
         var logicParsingRes = Enum.TryParse<Logic>(filteringOptionsModel.Logic, true, out var logic);
         if (!logicParsingRes)
         {
-            return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.InvalidStringValue("logic", filteringOptionsModel.Logic));
+            return MappingResult<FilteringOptions<TFilterBy>>.Failure(Errors.InvalidStringValue(nameof(filteringOptionsModel.Logic), filteringOptionsModel.Logic));
         }
 
         if (new HashSet<FilterModel>(filteringOptionsModel.Filters).Count != filteringOptionsModel.Filters.Count)
@@ -93,19 +89,19 @@ public static class Mapper
         {
             if (string.IsNullOrWhiteSpace(item.FilterBy))
             {
-                return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.ValueCannotBeNullOrEmpty("Filter by"));
+                return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.ValueCannotBeNullOrEmpty(nameof(item.FilterBy)));
             }
 
             var filterBy = FilteringEnum.FindFirstOrDefault<T>(item.FilterBy);
             if (filterBy is null)
             {
-                return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.InvalidStringValue("filter by", item.FilterBy));
+                return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.InvalidStringValue(nameof(item.FilterBy), item.FilterBy));
             }
 
             var operatorParsingRes = Enum.TryParse<FilteringOperators>(item.Operator, true, out var @operator);
             if (!operatorParsingRes)
             {
-                return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.InvalidStringValue("filtering operator", item.Operator));
+                return MappingResult<IReadOnlyCollection<Filter<T>>>.Failure(Errors.InvalidStringValue(nameof(item.Operator), item.Operator));
             }
 
             if (!filterBy.IsOperatorApplicable(@operator))
@@ -130,7 +126,7 @@ public record MappingResult<T>
         {
             if (IsFailure)
             {
-                throw new InvalidOperationException("Value of failured result can't be accessed.");
+                throw new InvalidOperationException("Value of failed result can't be accessed.");
             }
 
             return _value!;
@@ -145,14 +141,12 @@ public record MappingResult<T>
 
     protected MappingResult(bool isSuccess, T? value, string errorMessage)
     {
-        if (isSuccess && value is null)
+        switch (isSuccess)
         {
-            throw new InvalidOperationException("Unable to pass null when result is successed.");
-        }
-
-        if (!isSuccess && string.IsNullOrWhiteSpace(errorMessage))
-        {
-            throw new InvalidOperationException("Error message is required.");
+            case true when value is null:
+                throw new InvalidOperationException("Unable to pass null when result is succeed.");
+            case false when string.IsNullOrWhiteSpace(errorMessage):
+                throw new InvalidOperationException("Error message is required.");
         }
 
         _value = value;

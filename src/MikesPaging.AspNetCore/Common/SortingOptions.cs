@@ -6,6 +6,6 @@ namespace MikesPaging.AspNetCore.Common;
 public interface ISortingOptions { }
 public record SortingOptions<TSortBy>(
     [property: JsonConverter(typeof(JsonStringEnumConverter))] 
-    SortDirections SortDirection, 
+    SortingDirections SortDirection, 
     TSortBy SortBy) : ISortingOptions
     where TSortBy : SortingEnum;

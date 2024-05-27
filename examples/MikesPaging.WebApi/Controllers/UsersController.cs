@@ -4,6 +4,7 @@ using MikesPaging.AspNetCore;
 using MikesPaging.AspNetCore.Common.ViewModels;
 using MikesPaging.AspNetCore.Services.Interfaces;
 using MikesPaging.WebApi.Data;
+using MikesPaging.WebApi.Infrastructure;
 using MikesPaging.WebApi.Models;
 
 namespace MikesPaging.WebApi.Controllers;

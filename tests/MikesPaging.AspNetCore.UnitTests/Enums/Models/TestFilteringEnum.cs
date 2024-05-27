@@ -2,7 +2,7 @@
 using MikesPaging.AspNetCore.Common.Enums;
 using MikesPaging.AspNetCore.UnitTests.Models;
 
-namespace MikesPaging.AspNetCore.UnitTests.Enums;
+namespace MikesPaging.AspNetCore.UnitTests.Enums.Models;
 
 public class TestFilteringEnum : FilteringEnum
 {

@@ -30,7 +30,7 @@ public abstract record Page<TItem> : IPage<TItem>
 
         Items = items;
         TotalItemsCount = totalItemsCount;
-        PageIndex = pagingOptions is null ? StartCountingFrom : pagingOptions.PageIndex;
+        PageIndex = pagingOptions?.PageIndex ?? StartCountingFrom;
         TotalPagesCount = pagingOptions is null || pagingOptions is not null && totalItemsCount <= pagingOptions.PageSize ?
             StartCountingFrom 
             : 

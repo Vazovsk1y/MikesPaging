@@ -1,39 +1,44 @@
 # MikesPaging.AspNetCore
-MikesPaging.AspNetCore is a simple library for implementing paging, sorting and filtering functionality to your ASP.NET applications.
+
+MikesPaging.AspNetCore is a simple library for implementing paging, sorting, and filtering functionality in your ASP.NET applications.
 
 ## Install
 
 Minimum Requirements: **.NET 8.0.x**
 
-[Download from Nuget](https://www.nuget.org/packages/MikesPaging.AspNetCore/)
+[Download from NuGet](https://www.nuget.org/packages/MikesPaging.AspNetCore/)
 
-##### powershell
+##### PowerShell
 
 ```powershell
 NuGet\Install-Package MikesPaging.AspNetCore -Version *version_number*
 ```
 
-##### cmd
+##### CMD
+
 ```cmd
 dotnet add package MikesPaging.AspNetCore --version *version_number*
 ```
 
 ## Usage
 
-In this example, consider an app with a `User` entity. 
-We'll use MakesPaging.AspNetCore to add sorting, filtering, and pagination capabilities when receiving all available users.
+In this example, consider an app with a `User` entity that can have many accounts.
+We'll use MikesPaging.AspNetCore to add sorting, filtering, and pagination capabilities when retrieving all available users.
 
 ### 1. Paging
 
-##### DI
-```C#
+##### Dependency Injection (DI)
+
+```csharp
 builder.Services.AddPaging();
 ```
-##### Code example
-1. Inject IPagingManager<'T'> to use paging.
-2. Apply paging by calling 'ApplyPaging' and obtain result collection.
 
-```C# 
+##### Code Example
+
+1. Inject `IPagingManager<T>`.
+2. Apply paging by calling `ApplyPaging` and obtain the result collection.
+
+```csharp
 [HttpPost("page")]
 public IActionResult GetAsync(PagingOptionsModel pagingOptionsModel)
 {
@@ -67,34 +72,42 @@ public IActionResult GetAsync(PagingOptionsModel pagingOptionsModel)
 }
 ```
 
-##### Notes:
-- you can use built in 'PagingOptionsModel' class as api endpoint argument that supports mapping to 'PagingOptions' that you can pass to 'ApplyPaging' method.
+##### Notes
+
+- You can use the built-in `PagingOptionsModel` class as an API endpoint argument that supports mapping to `PagingOptions` that you must pass to the `ApplyPaging` method.
+- It is recommended to sort the collection before applying pagination.
 
 ### 2. Sorting
 
-##### DI
-```C#
+##### Dependency Injection (DI)
+
+```csharp
 builder.Services.AddSorting();
 ```
 
-##### Code example
-1. Define sorting enum for entity.
-```C# 
+##### Code Example
+
+1. Define sorting enum for the entity.
+
+```csharp
 public sealed class UsersSortingProperties : SortingEnum
 {
-    public static readonly UsersSortingProperties ByFullName = new(nameof(User.FullName), [nameof(User.FullName), "user_fullname"]);
+    public static readonly UsersSortingProperties ByFullName = new(nameof(User.FullName), new[] { nameof(User.FullName), "user_fullname" });
 
-    public static readonly UsersSortingProperties ByAge = new(nameof(User.Age), [nameof(User.Age), "user_age"]);
+    public static readonly UsersSortingProperties ByAge = new(nameof(User.Age), new[] { nameof(User.Age), "user_age" });
 
-    public static readonly UsersSortingProperties ByCreatedDate = new(nameof(User.Created), [nameof(User.Created), "created_date"]);
+    public static readonly UsersSortingProperties ByCreatedDate = new(nameof(User.Created), new[] { nameof(User.Created), "created_date" });
 
-    public static readonly UsersSortingProperties ByAccountsCount = new("AccountsCount", ["AccountsCount", "accounts_count"]);
-    private UsersSortingProperties(string propetyName, IReadOnlyCollection<string> allowedValues) : base(propetyName, allowedValues) { }
+    public static readonly UsersSortingProperties ByAccountsCount = new("AccountsCount", new[] { "AccountsCount", "accounts_count" });
+
+    private UsersSortingProperties(string propertyName, IReadOnlyCollection<string> allowedValues) : base(propertyName, allowedValues) { }
 }
 ```
-2. Inject ISortingManager<'T'> to use sorting.
-3. Apply sorting by calling 'ApplySorting' method and obtain result collection.
-```C#
+
+2. Inject `ISortingManager<T>`.
+3. Apply sorting by calling `ApplySorting` method and obtain the result collection.
+
+```csharp
 [HttpPost("sort")]
 public IActionResult GetAsync(SortingOptionsModel sortingOptionsModel)
 {
@@ -128,48 +141,72 @@ public IActionResult GetAsync(SortingOptionsModel sortingOptionsModel)
 }
 ```
 
-##### Notes:
-- only public/internal static readonly fields will be valid enum values.
-- you must inherit your sorting enum from base 'SortingEnum' class.
-- use nameof construction instead of passing string raws directly.
-- you can use built in 'SortingOptionsModel' class as api endpoint argument that supports mapping to 'SortingOptions' that you can pass to 'ApplySorting' method.
+##### Notes
+
+- Only `public/internal static readonly` fields will be valid enum values.
+- You must inherit your sorting enum from the base `SortingEnum` class.
+- Use the `nameof` keyword instead of passing string values directly.
+- You can use the built-in `SortingOptionsModel` class as an API endpoint argument that supports mapping to `SortingOptions` that you must pass to the `ApplySorting` method.
 
 ### 3. Filtering
 
-##### DI
-```C#
+##### Dependency Injection (DI)
+
+```csharp
 builder.Services.AddFiltering();
 ```
 
-##### Code example
-1. Define filtering enum for entity.
-```C# 
+##### Code Example
+
+1. Define filtering enum for the entity.
+
+```csharp
 public sealed class UsersFilteringProperties : FilteringEnum
 {
-    public static readonly UsersFilteringProperties ByFullName = 
-        new(nameof(User.FullName), [nameof(User.FullName), "user_fullname" ], 
-            inapplicableOperators: [ 
-                FilteringOperators.GreaterThanOrEqual, 
+    public static readonly UsersFilteringProperties ByFullName = new(nameof(User.FullName), new[] { nameof(User.FullName), "user_fullname" },
+            inapplicableOperators: new[]
+            {
+                FilteringOperators.GreaterThanOrEqual,
                 FilteringOperators.GreaterThan,
                 FilteringOperators.LessThan,
                 FilteringOperators.LessThanOrEqual,
-            ]);
+            });
 
-    public static readonly UsersFilteringProperties ByAge = new(nameof(User.Age), [nameof(User.Age), "user_age"]);
+    public static readonly UsersFilteringProperties ByAge = new(nameof(User.Age), new[] { nameof(User.Age), "user_age" },
+        inapplicableOperators: new[]
+        {
+            FilteringOperators.Contains,
+            FilteringOperators.StartsWith
+        });
 
-    public static readonly UsersFilteringProperties ByCreatedDate = new(nameof(User.Created), [nameof(User.Created), "created_date"]);
+    public static readonly UsersFilteringProperties ByCreatedDate = new(nameof(User.Created), new[] { nameof(User.Created), "created_date" },
+        inapplicableOperators: new[]
+        {
+            FilteringOperators.Contains,
+            FilteringOperators.StartsWith
+        });
 
-    public static readonly UsersFilteringProperties ByAccounts = new(nameof(User.Accounts), [nameof(User.Accounts), "user_accounts"]);
+    public static readonly UsersFilteringProperties ByAccounts = new(nameof(User.Accounts), new[] { nameof(User.Accounts), "user_accounts" },
+        inapplicableOperators: new[]
+        {
+            FilteringOperators.GreaterThanOrEqual,
+            FilteringOperators.GreaterThan,
+            FilteringOperators.LessThan,
+            FilteringOperators.LessThanOrEqual,
+            FilteringOperators.StartsWith,
+        });
 
-    private UsersFilteringProperties(string propertyName, IReadOnlyCollection<string> allowedNames, bool ignoreCase = true, IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null) 
+    private UsersFilteringProperties(string propertyName, IReadOnlyCollection<string> allowedNames, bool ignoreCase = true, IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null)
         : base(propertyName, allowedNames, ignoreCase, inapplicableOperators)
     {
     }
 }
 ```
-2. Inject IFilteringManager<'T'> to use filtering.
-3. Apply filtering by calling 'ApplyFiltering' method and obtain result collection.
-```C#
+
+2. Inject `IFilteringManager<T>`.
+3. Apply filtering by calling the `ApplyFiltering` method and obtain the result collection.
+
+```csharp
 [HttpPost("filter")]
 public IActionResult GetAsync(FilteringOptionsModel filteringOptionsModel)
 {
@@ -203,46 +240,49 @@ public IActionResult GetAsync(FilteringOptionsModel filteringOptionsModel)
 }
 ```
 
-##### Notes:
-- only public/internal static readonly fields will be valid enum values.
-- you must inherit your sorting enum from base 'FilteringEnum' class.
-- use nameof construction instead of passing string raws directly.
-- you can use built in 'FilteringOptionsModel' class as api endpoint argument that supports mapping to 'FilteringOptions' that you can pass to 'ApplyFiltering' method.
+##### Notes
+
+- Only `public/internal static readonly` fields will be valid enum values.
+- You must inherit your filtering enum from the base `FilteringEnum` class.
+- Use the `nameof` keyword instead of passing string values directly.
+- You can use the built-in `FilteringOptionsModel` class as an API endpoint argument that supports mapping to `FilteringOptions` that you must pass to the `ApplyFiltering` method.
 
 ### Configurations
 
 #### Sorting
-If you need to define custom sorter for any property that you defined in your sorting enum you can configure it as shown in example below.
 
-```C#
+If you need to define a custom sorter for any property that you defined in your sorting enum, you can configure it as shown in the example below.
+
+```csharp
 public class UsersSortingConfiguration : SortingConfiguration<User, UsersSortingProperties>
 {
     public UsersSortingConfiguration()
     {
-        RuleFor(UsersSortingProperties.ByAccountsCount, e => e.Accounts.Count);
+        SortFor(UsersSortingProperties.ByAccountsCount, e => e.Accounts.Count);
     }
 }
 ```
 
-##### DI
-```C#
+##### Dependency Injection (DI)
+
+```csharp
 builder.Services.AddSortingConfigurationsFromAssembly(typeof(UsersSortingConfiguration).Assembly);
 ```
 
-
 #### Filtering
-If you need to define custom filter for any property that you defined in your filtering enum you can configure it as shown in example below.
 
-```C#
+If you need to define a custom filter for any property that you defined in your filtering enum, you can configure it as shown in the example below.
+
+```csharp
 public class UsersFilteringConfiguration : FilteringConfiguration<User, UsersFilteringProperties>
 {
     public UsersFilteringConfiguration()
     {
-        RuleFor(UsersFilteringProperties.ByAccounts, FilteringOperators.Contains, filterValue =>
+        FilterFor(UsersFilteringProperties.ByAccounts, FilteringOperators.Contains, filterValue =>
         {
             if (!Guid.TryParse(filterValue, out var accountId))
             {
-                throw new InvalidCastException($"Unable cast {filterValue} to guid.");
+                throw new InvalidCastException($"Unable to cast {filterValue} to Guid.");
             }
 
             return user => user.Accounts.Any(a => a.Id == accountId);
@@ -251,26 +291,29 @@ public class UsersFilteringConfiguration : FilteringConfiguration<User, UsersFil
 }
 ```
 
-##### DI
-```C#
+##### Dependency Injection (DI)
+
+```csharp
 builder.Services.AddFilteringConfigurationsFromAssembly(typeof(UsersFilteringConfiguration).Assembly);
 ```
 
 ### Notes
-- you can return your paged/sorted/filtered collection directly or you can define page class that will be inherit one of possible pages and use it like return type.
-```C#
-public abstract record Page<TItem> : IPage<TItem>
+
+- You can return your paged/sorted/filtered collection directly, or you can define a page class that will be inherited from one of the possible pages and use it as a return type.
+
+```csharp
+public abstract record Page<TItem> : IPage<TItem>;
 
 public abstract record Page<TItem, TSorting, TFiltering> : 
     Page<TItem>
     where TSorting : class, ISortingOptions
-    where TFiltering : class, IFilteringOptions
+    where TFiltering : class, IFilteringOptions;
 
 public abstract record FilteredPage<TItem, TFiltering> : Page<TItem>
-    where TFiltering : class, IFilteringOptions
+    where TFiltering : class, IFilteringOptions;
 
 public abstract record SortedPage<TItem, TSorting> : Page<TItem>
-    where TSorting : class, ISortingOptions
+    where TSorting : class, ISortingOptions;
 
 public record UsersPage : Page<UserDTO, SortingOptions<UsersSortingProperties>, FilteringOptions<UsersFilteringProperties>>
 {
@@ -284,8 +327,10 @@ public record UsersPage : Page<UserDTO, SortingOptions<UsersSortingProperties>, 
     }
 }
 ```
-- you can use all at once as shown in the example below.
-```C#
+
+- You can use all at once with the `ReceivingModel` class as shown in the example below.
+
+```csharp
 [HttpPost]
 public IActionResult GetAsync(ReceivingModel receivingModel)
 {

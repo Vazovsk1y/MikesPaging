@@ -19,19 +19,6 @@ public abstract class SortingEnum : MikesPagingEnum
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SortingEnum"/> class with the specified parameters.
-    /// </summary>
-    /// <param name="propertyName">The name of the property associated with this sorting criterion.</param>
-    /// <param name="allowedNames">The allowed names for this sorting criterion.</param>
-    /// <param name="ignoreCase">Specifies whether to ignore case when comparing names.</param>
-    protected SortingEnum(
-        string propertyName,
-        IReadOnlyCollection<string> allowedNames,
-        bool ignoreCase = true) : base(propertyName, allowedNames, ignoreCase)
-    {
-    }
-
-    /// <summary>
     /// Enumerates all values of the specified <typeparamref name="T"/> sorting enumeration.
     /// </summary>
     /// <typeparam name="T">The type of the sorting enumeration.</typeparam>
@@ -67,7 +54,7 @@ public abstract class SortingEnum : MikesPagingEnum
 
         return Enumerate<T>()
             .FirstOrDefault(e =>
-                e.AllowedNames.Contains(name, e.IgnoreCase ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal));
+                e.AllowedNames.Contains(name, StringComparer.Ordinal));
     }
 
     /// <summary>

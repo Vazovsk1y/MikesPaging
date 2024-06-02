@@ -17,12 +17,6 @@ public abstract class MikesPagingEnum
     /// </summary>
     public IReadOnlyCollection<string> AllowedNames { get; }
 
-    /// <summary>
-    /// Gets or sets a value indicating whether to ignore case when comparing names.
-    /// </summary>
-    public bool IgnoreCase { get; } = true;
-
-
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private MikesPagingEnum() { }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -32,15 +26,13 @@ public abstract class MikesPagingEnum
     /// </summary>
     /// <param name="propertyName">The name of the property associated with this enumeration.</param>
     /// <param name="allowedNames">The allowed names for this enumeration.</param>
-    /// <param name="ignoreCase">Specifies whether to ignore case when comparing names.</param>
-    protected MikesPagingEnum(string propertyName, IReadOnlyCollection<string> allowedNames, bool ignoreCase = true)
+    protected MikesPagingEnum(string propertyName, IReadOnlyCollection<string> allowedNames)
     {
         MikesPagingException.ThrowIf(string.IsNullOrWhiteSpace(propertyName), Errors.ValueCannotBeNullOrEmpty(nameof(propertyName)));
         MikesPagingException.ThrowIf(allowedNames is null || allowedNames.Count == 0, Errors.ValueCannotBeNullOrEmpty(nameof(allowedNames)));
         MikesPagingException.ThrowIf(allowedNames.Any(string.IsNullOrWhiteSpace), "Allowed names collection cannot contain null or empty string.");
-        MikesPagingException.ThrowIf(allowedNames.Distinct().Count() != allowedNames.Count, "Allowed names collection contain duplicates.");
+        MikesPagingException.ThrowIf(allowedNames.Distinct(StringComparer.Ordinal).Count() != allowedNames.Count, "Allowed names collection contain duplicates.");
 
-        IgnoreCase = ignoreCase;
         PropertyName = propertyName;
         AllowedNames = allowedNames;
     }
@@ -58,10 +50,7 @@ public abstract class MikesPagingEnum
         if (GetType() != obj.GetType())
             return false;
 
-        if (obj is not MikesPagingEnum @enum)
-            return false;
-
-        return GetEqualityComponents().SequenceEqual(@enum.GetEqualityComponents());
+        return obj is MikesPagingEnum @enum && GetEqualityComponents().SequenceEqual(@enum.GetEqualityComponents());
     }
 
     /// <summary>
@@ -84,7 +73,6 @@ public abstract class MikesPagingEnum
     protected virtual IEnumerable<object?> GetEqualityComponents()
     {
         yield return PropertyName;
-        yield return IgnoreCase;
         foreach (var item in AllowedNames.OrderBy(e => e))
         {
             yield return item;

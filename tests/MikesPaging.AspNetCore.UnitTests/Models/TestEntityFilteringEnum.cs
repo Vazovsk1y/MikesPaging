@@ -21,8 +21,7 @@ public class TestEntityFilteringEnum : FilteringEnum
     private TestEntityFilteringEnum(
         string propertyName, 
         IReadOnlyCollection<string> allowedNames, 
-        bool ignoreCase = true, 
-        IReadOnlyCollection<FilteringOperators> inaplicableOperators = null) : base(propertyName, allowedNames, ignoreCase, inaplicableOperators)
+        IReadOnlyCollection<FilteringOperators> inaplicableOperators = null) : base(propertyName, allowedNames, inaplicableOperators)
     {
     }
 }

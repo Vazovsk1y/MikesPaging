@@ -14,8 +14,6 @@ public class TestFilteringEnum : FilteringEnum
 
     internal static readonly TestFilteringEnum ByLastNameInternalField = new(nameof(TestEntity.LastName), AllowedTestEntityNames.AllowedNamesForLastName);
 
-    public static readonly TestFilteringEnum ByAnyPropertyCaseSensitive = new(nameof(ByAnyPropertyCaseSensitive), [nameof(ByAnyPropertyCaseSensitive)], false);
-
     //
 
     // invalid
@@ -38,8 +36,7 @@ public class TestFilteringEnum : FilteringEnum
     internal TestFilteringEnum(
         string propertyName, 
         IReadOnlyCollection<string> allowedNames, 
-        bool ignoreCase = true, 
-        IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null) : base(propertyName, allowedNames, ignoreCase, inapplicableOperators)
+        IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null) : base(propertyName, allowedNames, inapplicableOperators)
     {
     }
 }

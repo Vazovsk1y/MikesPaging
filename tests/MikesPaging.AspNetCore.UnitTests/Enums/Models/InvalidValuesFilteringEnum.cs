@@ -22,8 +22,8 @@ public class InvalidValuesFilteringEnum : FilteringEnum
     public static InvalidValuesFilteringEnum DuplicatesInInapplicableOperators = 
         new(nameof(EmptyStringContainsInAllowedNames), [nameof(EmptyStringContainsInAllowedNames), string.Empty], inapplicableOperators: [ FilteringOperators.NotEqual, FilteringOperators.NotEqual ]);
 
-    private InvalidValuesFilteringEnum(string propertyName, IReadOnlyCollection<string> allowedNames, bool ignoreCase = true, IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null) 
-        : base(propertyName, allowedNames, ignoreCase, inapplicableOperators)
+    private InvalidValuesFilteringEnum(string propertyName, IReadOnlyCollection<string> allowedNames, IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null) 
+        : base(propertyName, allowedNames, inapplicableOperators)
     {
     }
 }

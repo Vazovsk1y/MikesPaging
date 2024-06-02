@@ -11,12 +11,12 @@ namespace MikesPaging.AspNetCore.UnitTests.Sorting;
 
 public class DefaultSortingManagerTests
 {
-    public static TheoryData<SortingOptions<TestEntitySortingEnum>> InvalidSortingOptions { get; } =
-    [
+    public static TheoryData<SortingOptions<TestEntitySortingEnum>> InvalidSortingOptions { get; } = new()
+    {
         new (SortingDirections.Descending, null),
         new (SortingDirections.Ascending, TestEntitySortingEnum.ByAgeButWithInvalidPropertyName),
         new (SortingDirections.Descending, TestEntitySortingEnum.ByAgeButWithInvalidPropertyName),
-    ];
+    };
     
     [Fact]
     public void ApplySorting_Should_Return_The_Same_Collection_WHEN_null_passed_to_sorting_options()

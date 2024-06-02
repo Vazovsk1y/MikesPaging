@@ -23,8 +23,8 @@ public class DefaultFilteringManagerTests
         FilteringOperators.StartsWith,
     ];
 
-    public static TheoryData<FilteringOptions<TestEntityFilteringEnum>> InvalidFilteringOptions { get; } = 
-    [
+    public static TheoryData<FilteringOptions<TestEntityFilteringEnum>> InvalidFilteringOptionsData { get; } = new TheoryData<FilteringOptions<TestEntityFilteringEnum>>()
+    {
         // invalid
         new(null, Extensions.PickRandom(Logic.And, Logic.Or)),
         new([ ], Extensions.PickRandom(Logic.And, Logic.Or)),
@@ -45,7 +45,7 @@ public class DefaultFilteringManagerTests
         new([new(TestEntityFilteringEnum.ByFirstName, ComparableOperators.GetRandom(), "anySearchTerm")], Extensions.PickRandom(Logic.And, Logic.Or)),
 
         new([new(TestEntityFilteringEnum.ByAge, TestEntityFilteringEnum.ByAge.InapplicableOperators.GetRandom(), "1")], Extensions.PickRandom(Logic.And, Logic.Or)),
-    ];
+    };
 
     [Fact]
     public void ApplyFiltering_Should_Return_The_Same_Collection_WHEN_null_passed_to_filteringOptions()
@@ -141,7 +141,7 @@ public class DefaultFilteringManagerTests
     }
 
     [Theory]
-    [MemberData(nameof(InvalidFilteringOptions))]
+    [MemberData(nameof(InvalidFilteringOptionsData))]
     public void ApplyFiltering_Should_Throw_FilteringException_WHEN_invalid_filtering_options_passed(FilteringOptions<TestEntityFilteringEnum> filteringOptions)
     {
         // arrange

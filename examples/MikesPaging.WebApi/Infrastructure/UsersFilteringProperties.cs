@@ -35,8 +35,8 @@ public sealed class UsersFilteringProperties : FilteringEnum
             FilteringOperators.StartsWith,
             ]);
 
-    private UsersFilteringProperties(string propertyName, IReadOnlyCollection<string> allowedNames, bool ignoreCase = true, IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null)
-        : base(propertyName, allowedNames, ignoreCase, inapplicableOperators)
+    private UsersFilteringProperties(string propertyName, IReadOnlyCollection<string> allowedNames, IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null)
+        : base(propertyName, allowedNames, inapplicableOperators)
     {
     }
 }

@@ -22,14 +22,12 @@ public abstract class FilteringEnum : MikesPagingEnum
     /// </summary>
     /// <param name="propertyName">The name of the property associated with this filtering criterion.</param>
     /// <param name="allowedNames">The allowed names for this filtering criterion.</param>
-    /// <param name="ignoreCase">Specifies whether to ignore case when comparing names.</param>
     /// <param name="inapplicableOperators">The collection of operators that are not applicable to this filtering criterion.</param>
     protected FilteringEnum(
         string propertyName,
         IReadOnlyCollection<string> allowedNames,
-        bool ignoreCase = true,
         IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null)
-        : base(propertyName, allowedNames, ignoreCase)
+        : base(propertyName, allowedNames)
     {
         if (inapplicableOperators is null)
         {
@@ -78,7 +76,7 @@ public abstract class FilteringEnum : MikesPagingEnum
 
         return Enumerate<T>()
               .FirstOrDefault(e =>
-                     e.AllowedNames.Contains(name, e.IgnoreCase ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal));
+                     e.AllowedNames.Contains(name, StringComparer.Ordinal));
     }
 
     /// <summary>

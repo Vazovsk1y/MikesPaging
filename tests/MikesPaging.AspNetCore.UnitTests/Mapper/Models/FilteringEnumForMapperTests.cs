@@ -17,7 +17,7 @@ public class FilteringEnumForMapperTests : FilteringEnum
     public static readonly FilteringEnumForMapperTests ByAnyPropertyWithInapplicableOperators = 
         new(nameof(ByAnyPropertyWithInapplicableOperators), [nameof(ByAnyPropertyWithInapplicableOperators)], inapplicableOperators: [ FilteringOperators.GreaterThan, FilteringOperators.NotEqual ]);
 
-    internal FilteringEnumForMapperTests(string propertyName, IReadOnlyCollection<string> allowedNames, bool ignoreCase = true, IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null) : base(propertyName, allowedNames, ignoreCase, inapplicableOperators)
+    internal FilteringEnumForMapperTests(string propertyName, IReadOnlyCollection<string> allowedNames, IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null) : base(propertyName, allowedNames, inapplicableOperators)
     {
     }
 }

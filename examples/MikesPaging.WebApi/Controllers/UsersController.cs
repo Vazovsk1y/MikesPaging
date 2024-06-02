@@ -18,25 +18,25 @@ public class UsersController(
     IFilteringManager<User> filteringManager
     ) : ControllerBase
 {
-    [HttpPost]
+    [HttpPost("full")]
     public IActionResult GetAsync(ReceivingModel receivingModel)
     {
         var pagingOptionsRes = receivingModel.PagingOptions.ToOptions();
         if (pagingOptionsRes.IsFailure)
         {
-            return BadRequest(pagingOptionsRes.ErrorMessage);
+            return BadRequest(pagingOptionsRes.Errors);
         }
 
         var sortingOptionsRes = receivingModel.SortingOptions.ToOptions<UsersSortingProperties>();
         if (sortingOptionsRes.IsFailure)
         {
-            return BadRequest(sortingOptionsRes.ErrorMessage);
+            return BadRequest(sortingOptionsRes.Errors);
         }
 
         var filteringOptionsRes = receivingModel.FilteringOptions.ToOptions<UsersFilteringProperties>();
         if (filteringOptionsRes.IsFailure)
         {
-            return BadRequest(filteringOptionsRes.ErrorMessage);
+            return BadRequest(filteringOptionsRes.Errors);
         }
 
         var pagingOptions = pagingOptionsRes.Value;
@@ -71,7 +71,7 @@ public class UsersController(
         var pagingOptionsRes = pagingOptionsModel.ToOptions();
         if (pagingOptionsRes.IsFailure)
         {
-            return BadRequest(pagingOptionsRes.ErrorMessage);
+            return BadRequest(pagingOptionsRes.Errors);
         }
 
         var pagingOptions = pagingOptionsRes.Value;
@@ -103,7 +103,7 @@ public class UsersController(
         var sortingOptionsRes = sortingOptionsModel.ToOptions<UsersSortingProperties>();
         if (sortingOptionsRes.IsFailure)
         {
-            return BadRequest(sortingOptionsRes.ErrorMessage);
+            return BadRequest(sortingOptionsRes.Errors);
         }
 
         var sortingOptions = sortingOptionsRes.Value;
@@ -135,7 +135,7 @@ public class UsersController(
         var filteringOptionsRes = filteringOptionsModel.ToOptions<UsersFilteringProperties>();
         if (filteringOptionsRes.IsFailure)
         {
-            return BadRequest(filteringOptionsRes.ErrorMessage);
+            return BadRequest(filteringOptionsRes.Errors);
         }
 
         var filteringOptions = filteringOptionsRes.Value;

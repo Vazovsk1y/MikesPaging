@@ -52,8 +52,8 @@ public class MapperTests
        { new (0, 0) },
     };
 
-    public static TheoryData<SortingOptionsModel> InvalidSortingOptionsModels { get; } =
-    [
+    public static TheoryData<SortingOptionsModel> InvalidSortingOptionsModels { get; } = new()
+    {
         // (null or empty string passed)
         new(string.Empty, "age"),
         new(Extensions.PickRandom(_and, _or), string.Empty),
@@ -75,7 +75,7 @@ public class MapperTests
         new(Extensions.PickRandom(_and, _or), "frstName"),
         new(Extensions.PickRandom(_and, _or), "lst_name"),
         new(Extensions.PickRandom(_and, _or), "created_ate")
-    ];
+    };
 
     public static TheoryData<SortingOptionsModel> ValidSortingOptionsModels
     {
@@ -91,8 +91,8 @@ public class MapperTests
         }
     }
 
-    public static TheoryData<FilteringOptionsModel> InvalidFilteringOptionsModels { get; } =
-    [
+    public static TheoryData<FilteringOptionsModel> InvalidFilteringOptionsModels { get; } = new TheoryData<FilteringOptionsModel>()
+    {
         // invalid (bad data passed)
         new([], Extensions.PickRandom(_and, _or)),
         new(null, Extensions.PickRandom(_and, _or)),
@@ -120,7 +120,7 @@ public class MapperTests
             FilteringEnumForMapperTests.ByAnyPropertyWithInapplicableOperators.AllowedNames.GetRandom(), 
             _values.GetRandom(), 
             FilteringEnumForMapperTests.ByAnyPropertyWithInapplicableOperators.InapplicableOperators.GetRandom().ToString())], Extensions.PickRandom(_or, _and))
-    ];
+    };
 
     public static TheoryData<FilteringOptionsModel> ValidFilteringOptionsModels
     {

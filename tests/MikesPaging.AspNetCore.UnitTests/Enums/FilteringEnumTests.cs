@@ -10,22 +10,14 @@ public class FilteringEnumTests
     public static TheoryData<TestFilteringEnum, TestFilteringEnum, bool> FilteringEnums { get; } = new ()
     {
         // not equal
-        { new("propertyName", ["propertyName"], 
-            inapplicableOperators: [ FilteringOperators.NotEqual ]), 
-            new("property", ["propertyName"], 
-                inapplicableOperators: [ FilteringOperators.GreaterThanOrEqual ]), false },
-
-        { new("propertyName", ["propertyName"], ignoreCase: true,
-            inapplicableOperators: [ FilteringOperators.NotEqual ]),
-            new("propertyName", ["propertyName"], ignoreCase: false,
-                inapplicableOperators: [ FilteringOperators.NotEqual ]), false },
-
         { new("propertyName", ["propertyName"]), new("propertyName", ["propertyName", "another"]), false },
         { new("propertyName", ["another", "propertyName"]), new("propertyName", ["Another", "propertyName"]), false },
         { new("propertyName", ["propertyName", "another"]), new("propertyName", ["Another", "propertyName"]), false },
-        { new("propertyName", ["propertyName"], true), new("propertyName", ["propertyName"], false), false },
-
-
+        { new("propertyName", ["propertyName"], 
+                inapplicableOperators: [ FilteringOperators.NotEqual ]), 
+            new("property", ["propertyName"], 
+                inapplicableOperators: [ FilteringOperators.GreaterThanOrEqual ]), false },
+        
         // equal
         { new("propertyName", ["propertyName"], 
             inapplicableOperators: [ FilteringOperators.NotEqual ]), 
@@ -40,7 +32,6 @@ public class FilteringEnumTests
         { new("propertyName", ["propertyName"]), new("propertyName", ["propertyName"]), true },
         { new("propertyName", ["propertyName", "another"]), new("propertyName", ["propertyName", "another"]), true },
         { new("propertyName", ["propertyName", "another"]), new("propertyName", ["another", "propertyName"]), true },
-        { new("propertyName", ["propertyName", "another"], ignoreCase: false), new("propertyName", ["another", "propertyName"], ignoreCase: false), true },
     };
 
     public static TheoryData<TestFilteringEnum, FilteringOperators, bool> DataForIsOperatorApplicable = new()
@@ -108,7 +99,6 @@ public class FilteringEnumTests
             TestFilteringEnum.ByFirstName, 
             TestFilteringEnum.ByLastNameInternalField, 
             TestFilteringEnum.ByLastName,
-            TestFilteringEnum.ByAnyPropertyCaseSensitive
         };
 
         var result = FilteringEnum.Enumerate<TestFilteringEnum>();
@@ -117,25 +107,9 @@ public class FilteringEnumTests
     }
 
     [Fact]
-    public void FindFirstOrDefault_Should_Return_The_Same_Value_regardless_of_which_case_searchTerm_was_passed_when_case_ignore_configured_to_TRUE()
+    public void FindFirstOrDefault_Should_Return_Null_when_searchTerm_case_was_changed()
     {
         var expected = TestFilteringEnum.ByLastName;
-        string searchTerm = expected.AllowedNames.GetRandom();
-
-        var defaultCaseResult = FilteringEnum.FindFirstOrDefault<TestFilteringEnum>(searchTerm);
-        var caseChangedResult = FilteringEnum.FindFirstOrDefault<TestFilteringEnum>(new string(searchTerm
-            .Select(e => char.IsLower(e) ? char.ToUpper(e) : char.ToLower(e))
-            .ToArray()));
-
-        defaultCaseResult.Should().BeEquivalentTo(expected);
-        caseChangedResult.Should().BeEquivalentTo(expected);
-        defaultCaseResult.Should().Be(caseChangedResult);
-    }
-
-    [Fact]
-    public void FindFirstOrDefault_Should_Return_Null_when_searchTerm_case_was_changed_and_case_ignore_configured_to_FALSE()
-    {
-        var expected = TestFilteringEnum.ByAnyPropertyCaseSensitive;
         string searchTerm = expected.AllowedNames.GetRandom();
 
         var caseSensitiveResult = FilteringEnum.FindFirstOrDefault<TestFilteringEnum>(searchTerm);

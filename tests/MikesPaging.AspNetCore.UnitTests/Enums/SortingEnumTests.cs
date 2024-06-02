@@ -8,16 +8,14 @@ public class SortingEnumTests
 {
     public static TheoryData<TestSortingEnum, TestSortingEnum, bool> SortingEnums { get; } = new TheoryData<TestSortingEnum, TestSortingEnum, bool>
     {
-        { new("propertyName", ["propertyName"]), new("property", ["propertyName"]), false },
         { new("propertyName", ["propertyName"]), new("propertyName", ["propertyName", "another"]), false },
         { new("propertyName", ["another", "propertyName"]), new("propertyName", ["Another", "propertyName"]), false },
         { new("propertyName", ["propertyName", "another"]), new("propertyName", ["Another", "propertyName"]), false },
-        { new("propertyName", ["propertyName"], true), new("propertyName", ["propertyName"], false), false },
 
         { new("propertyName", ["propertyName"]), new("propertyName", ["propertyName"]), true },
         { new("propertyName", ["propertyName", "another"]), new("propertyName", ["propertyName", "another"]), true },
         { new("propertyName", ["propertyName", "another"]), new("propertyName", ["another", "propertyName"]), true },
-        { new("propertyName", ["propertyName", "another"], false), new("propertyName", ["another", "propertyName"], false), true },
+        { new("propertyName", ["propertyName", "another"]), new("propertyName", ["another", "propertyName"]), true },
     };
 
     [Fact]
@@ -65,7 +63,7 @@ public class SortingEnumTests
     [Fact]
     public void Enumerate_Should_Return_Only_Public_Or_Internal_Static_Readonly_Fields_and_NOT_null_values()
     {
-        var expected = new[] { TestSortingEnum.ByFirstName, TestSortingEnum.ByLastNameInternalField, TestSortingEnum.ByLastName, TestSortingEnum.ByAnyPropertyCaseSensitive };
+        var expected = new[] { TestSortingEnum.ByFirstName, TestSortingEnum.ByLastNameInternalField, TestSortingEnum.ByLastName };
 
         var result = SortingEnum.Enumerate<TestSortingEnum>();
 
@@ -73,25 +71,9 @@ public class SortingEnumTests
     }
 
     [Fact]
-    public void FindFirstOrDefault_Should_Return_The_Same_Value_regardless_of_which_case_searchTerm_was_passed_when_case_ignore_configured_to_true()
+    public void FindFirstOrDefault_Should_Return_Null_when_searchTerm_case_was_changed()
     {
-        var expected = TestSortingEnum.ByLastName;
-        string searchTerm = expected.AllowedNames.GetRandom();
-
-        var defaultCaseResult = SortingEnum.FindFirstOrDefault<TestSortingEnum>(searchTerm);
-        var caseChangedResult = SortingEnum.FindFirstOrDefault<TestSortingEnum>(new string(searchTerm
-            .Select(e => char.IsLower(e) ? char.ToUpper(e) : char.ToLower(e))
-            .ToArray()));
-
-        defaultCaseResult.Should().BeEquivalentTo(expected);
-        caseChangedResult.Should().BeEquivalentTo(expected);
-        defaultCaseResult.Should().Be(caseChangedResult);
-    }
-
-    [Fact]
-    public void FindFirstOrDefault_Should_Return_Null_when_searchTerm_case_was_changed_and_case_ignore_configured_to_false()
-    {
-        var expected = TestSortingEnum.ByAnyPropertyCaseSensitive;
+        var expected = TestSortingEnum.ByFirstName;
         string searchTerm = expected.AllowedNames.GetRandom();
 
         var caseSensitiveResult = SortingEnum.FindFirstOrDefault<TestSortingEnum>(searchTerm);

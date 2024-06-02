@@ -9,7 +9,7 @@ using System.Reflection;
 namespace MikesPaging.AspNetCore;
 
 // TODO: Remove ASP.NET Core tag from package tags.
-// TODO: How to include xml documentation in final package when publishing to NuGet.org?
+
 public static class Registrator
 {
     public static IServiceCollection AddPaging(this IServiceCollection services)

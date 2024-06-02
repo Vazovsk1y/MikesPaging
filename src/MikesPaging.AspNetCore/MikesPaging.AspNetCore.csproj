@@ -14,7 +14,8 @@
       <PackageTags>Paging;Sorting;Filtering;ASP.NET;ASP.NET Core;.NET;</PackageTags>
 	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
       <GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<Version>1.0.1</Version>
+      <NoWarn>$(NoWarn);1591</NoWarn>
+	<Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

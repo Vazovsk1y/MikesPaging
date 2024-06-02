@@ -18,7 +18,7 @@ public class UsersController(
     IFilteringManager<User> filteringManager
     ) : ControllerBase
 {
-    [HttpPost]
+    [HttpPost("full")]
     public IActionResult GetAsync(ReceivingModel receivingModel)
     {
         var pagingOptionsRes = receivingModel.PagingOptions.ToOptions();

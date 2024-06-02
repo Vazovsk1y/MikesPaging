@@ -45,7 +45,7 @@ public IActionResult GetAsync(PagingOptionsModel pagingOptionsModel)
     var pagingOptionsRes = pagingOptionsModel.ToOptions();
     if (pagingOptionsRes.IsFailure)
     {
-        return BadRequest(pagingOptionsRes.ErrorMessage);
+        return BadRequest(pagingOptionsRes.Errors);
     }
 
     var pagingOptions = pagingOptionsRes.Value;
@@ -65,8 +65,8 @@ public IActionResult GetAsync(PagingOptionsModel pagingOptionsModel)
         e.Age,
         e.Created,
         e.Accounts.Select(i => new AccountDTO(i.Id, i.Followers)).ToList()
-        ))
-        .ToList();
+    ))
+    .ToList();
 
     return Ok(new UsersPage(users, totalUsersCount, null, null, pagingOptions));
 }
@@ -100,7 +100,7 @@ public sealed class UsersSortingProperties : SortingEnum
 
     public static readonly UsersSortingProperties ByAccountsCount = new("AccountsCount", new[] { "AccountsCount", "accounts_count" });
 
-    private UsersSortingProperties(string propertyName, IReadOnlyCollection<string> allowedValues) : base(propertyName, allowedValues) { }
+    private UsersSortingProperties(string propetyName, IReadOnlyCollection<string> allowedValues) : base(propetyName, allowedValues) { }
 }
 ```
 
@@ -114,7 +114,7 @@ public IActionResult GetAsync(SortingOptionsModel sortingOptionsModel)
     var sortingOptionsRes = sortingOptionsModel.ToOptions<UsersSortingProperties>();
     if (sortingOptionsRes.IsFailure)
     {
-        return BadRequest(sortingOptionsRes.ErrorMessage);
+        return BadRequest(sortingOptionsRes.Errors);
     }
 
     var sortingOptions = sortingOptionsRes.Value;
@@ -134,8 +134,8 @@ public IActionResult GetAsync(SortingOptionsModel sortingOptionsModel)
         e.Age,
         e.Created,
         e.Accounts.Select(i => new AccountDTO(i.Id, i.Followers)).ToList()
-        ))
-        .ToList();
+    ))
+    .ToList();
 
     return Ok(new UsersPage(users, totalUsersCount, sortingOptions, null));
 }
@@ -164,13 +164,13 @@ builder.Services.AddFiltering();
 public sealed class UsersFilteringProperties : FilteringEnum
 {
     public static readonly UsersFilteringProperties ByFullName = new(nameof(User.FullName), new[] { nameof(User.FullName), "user_fullname" },
-            inapplicableOperators: new[]
-            {
-                FilteringOperators.GreaterThanOrEqual,
-                FilteringOperators.GreaterThan,
-                FilteringOperators.LessThan,
-                FilteringOperators.LessThanOrEqual,
-            });
+        inapplicableOperators: new[]
+        {
+            FilteringOperators.GreaterThanOrEqual,
+            FilteringOperators.GreaterThan,
+            FilteringOperators.LessThan,
+            FilteringOperators.LessThanOrEqual,
+        });
 
     public static readonly UsersFilteringProperties ByAge = new(nameof(User.Age), new[] { nameof(User.Age), "user_age" },
         inapplicableOperators: new[]
@@ -196,8 +196,8 @@ public sealed class UsersFilteringProperties : FilteringEnum
             FilteringOperators.StartsWith,
         });
 
-    private UsersFilteringProperties(string propertyName, IReadOnlyCollection<string> allowedNames, bool ignoreCase = true, IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null)
-        : base(propertyName, allowedNames, ignoreCase, inapplicableOperators)
+    private UsersFilteringProperties(string propertyName, IReadOnlyCollection<string> allowedNames, IReadOnlyCollection<FilteringOperators>? inapplicableOperators = null)
+        : base(propertyName, allowedNames, inapplicableOperators)
     {
     }
 }
@@ -213,7 +213,7 @@ public IActionResult GetAsync(FilteringOptionsModel filteringOptionsModel)
     var filteringOptionsRes = filteringOptionsModel.ToOptions<UsersFilteringProperties>();
     if (filteringOptionsRes.IsFailure)
     {
-        return BadRequest(filteringOptionsRes.ErrorMessage);
+        return BadRequest(filteringOptionsRes.Errors);
     }
 
     var filteringOptions = filteringOptionsRes.Value;
@@ -233,8 +233,8 @@ public IActionResult GetAsync(FilteringOptionsModel filteringOptionsModel)
         e.Age,
         e.Created,
         e.Accounts.Select(i => new AccountDTO(i.Id, i.Followers)).ToList()
-        ))
-        .ToList();
+    ))
+    .ToList();
 
     return Ok(new UsersPage(users, totalUsersCount, null, filteringOptions, null));
 }
@@ -302,9 +302,11 @@ builder.Services.AddFilteringConfigurationsFromAssembly(typeof(UsersFilteringCon
 - You can return your paged/sorted/filtered collection directly, or you can define a page class that will be inherited from one of the possible pages and use it as a return type.
 
 ```csharp
-public abstract record Page<TItem> : IPage<TItem>;
+public abstract record Page<TItem> :
 
-public abstract record Page<TItem, TSorting, TFiltering> : 
+ IPage<TItem>;
+
+public abstract record Page<TItem, TSorting, TFiltering> :
     Page<TItem>
     where TSorting : class, ISortingOptions
     where TFiltering : class, IFilteringOptions;
@@ -318,7 +320,7 @@ public abstract record SortedPage<TItem, TSorting> : Page<TItem>
 public record UsersPage : Page<UserDTO, SortingOptions<UsersSortingProperties>, FilteringOptions<UsersFilteringProperties>>
 {
     public UsersPage(
-        IReadOnlyCollection<UserDTO> users, 
+        IReadOnlyCollection<UserDTO> users,
         int totalUsersCount,
         SortingOptions<UsersSortingProperties>? sortingOptions,
         FilteringOptions<UsersFilteringProperties>? filteringOptions,
@@ -331,25 +333,25 @@ public record UsersPage : Page<UserDTO, SortingOptions<UsersSortingProperties>, 
 - You can use all at once with the `ReceivingModel` class as shown in the example below.
 
 ```csharp
-[HttpPost]
+[HttpPost("full")]
 public IActionResult GetAsync(ReceivingModel receivingModel)
 {
     var pagingOptionsRes = receivingModel.PagingOptions.ToOptions();
     if (pagingOptionsRes.IsFailure)
     {
-        return BadRequest(pagingOptionsRes.ErrorMessage);
+        return BadRequest(pagingOptionsRes.Errors);
     }
 
     var sortingOptionsRes = receivingModel.SortingOptions.ToOptions<UsersSortingProperties>();
     if (sortingOptionsRes.IsFailure)
     {
-        return BadRequest(sortingOptionsRes.ErrorMessage);
+        return BadRequest(sortingOptionsRes.Errors);
     }
 
     var filteringOptionsRes = receivingModel.FilteringOptions.ToOptions<UsersFilteringProperties>();
     if (filteringOptionsRes.IsFailure)
     {
-        return BadRequest(filteringOptionsRes.ErrorMessage);
+        return BadRequest(filteringOptionsRes.Errors);
     }
 
     var pagingOptions = pagingOptionsRes.Value;
@@ -372,8 +374,8 @@ public IActionResult GetAsync(ReceivingModel receivingModel)
         e.Age,
         e.Created,
         e.Accounts.Select(i => new AccountDTO(i.Id, i.Followers)).ToList()
-        ))
-        .ToList();
+    ))
+    .ToList();
 
     return Ok(new UsersPage(users, totalUsersCount, sortingOptions, filteringOptions, pagingOptions));
 }

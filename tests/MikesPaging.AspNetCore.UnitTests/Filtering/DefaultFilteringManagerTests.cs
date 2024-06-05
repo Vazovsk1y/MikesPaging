@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using MikesPaging.AspNetCore.Common;
 using MikesPaging.AspNetCore.Common.Enums;
+using MikesPaging.AspNetCore.Common.Interfaces;
 using MikesPaging.AspNetCore.Exceptions;
 using MikesPaging.AspNetCore.Services;
 using MikesPaging.AspNetCore.UnitTests.Models;
@@ -95,13 +96,13 @@ public class DefaultFilteringManagerTests
         var filters = new Filter<TestEntityFilteringEnum>[]
         {
             new(TestEntityFilteringEnum.ByAge, FilteringOperators.LessThanOrEqual, "1"),
-            new(TestEntityFilteringEnum.ByFirstName, FilteringOperators.Contains, "Mi")
+            new(TestEntityFilteringEnum.ByIQ, FilteringOperators.NotEqual, null)
         };
 
         var filteringOptions = new FilteringOptions<TestEntityFilteringEnum>(filters, Logic.Or);
         var expected = new Guid[]
         {
-            data[1].Id,
+            data[0].Id,
             data[2].Id,
         };
 
@@ -122,13 +123,175 @@ public class DefaultFilteringManagerTests
 
         var filters = new Filter<TestEntityFilteringEnum>[]
         {
-            new(TestEntityFilteringEnum.ByAge, FilteringOperators.LessThanOrEqual, "1"),
-            new(TestEntityFilteringEnum.ByFirstName, FilteringOperators.Contains, "r")
+            new(TestEntityFilteringEnum.ByAge, FilteringOperators.LessThanOrEqual, "3"),
+            new(TestEntityFilteringEnum.ByIQ, FilteringOperators.Equal, null)
         };
 
         var filteringOptions = new FilteringOptions<TestEntityFilteringEnum>(filters, Logic.And);
         var expected = new Guid[]
         {
+            data[1].Id,
+        };
+
+        // act 
+        var result = manager.ApplyFiltering(data.AsQueryable(), filteringOptions);
+
+        // assert
+        var actual = result.Select(e => e.Id).ToArray();
+        actual.Should().BeEquivalentTo(expected);
+    }
+    
+    [Fact]
+    public void ApplyFiltering_Should_Return_Filtered_Collection_WHEN_single_userDefined_filter_passed_with_AND_logic()
+    {
+        // arrange
+        var manager = CreateFilteringManagerWithFilteringConfigurationUsing();
+        var data = Data.TestEntities;
+
+        var filters = new Filter<TestEntityFilteringEnum>[]
+        {
+            new(TestEntityFilteringEnum.ByComplexTypeTitle, FilteringOperators.Contains, "1"),
+        };
+
+        var filteringOptions = new FilteringOptions<TestEntityFilteringEnum>(filters, Logic.And);
+        var expected = new Guid[]
+        {
+            data[0].Id,
+        };
+
+        // act 
+        var result = manager.ApplyFiltering(data.AsQueryable(), filteringOptions);
+
+        // assert
+        var actual = result.Select(e => e.Id).ToArray();
+        actual.Should().BeEquivalentTo(expected);
+    }
+    
+    [Fact]
+    public void ApplyFiltering_Should_Return_Filtered_Collection_WHEN_single_userDefined_filter_passed_with_OR_logic()
+    {
+        // arrange
+        var manager = CreateFilteringManagerWithFilteringConfigurationUsing();
+        var data = Data.TestEntities;
+
+        var filters = new Filter<TestEntityFilteringEnum>[]
+        {
+            new(TestEntityFilteringEnum.ByComplexTypeTitle, FilteringOperators.Contains, "1"),
+        };
+
+        var filteringOptions = new FilteringOptions<TestEntityFilteringEnum>(filters, Logic.Or);
+        var expected = new Guid[]
+        {
+            data[0].Id,
+        };
+
+        // act 
+        var result = manager.ApplyFiltering(data.AsQueryable(), filteringOptions);
+
+        // assert
+        var actual = result.Select(e => e.Id).ToArray();
+        actual.Should().BeEquivalentTo(expected);
+    }
+    
+    [Fact]
+    public void ApplyFiltering_Should_Return_Filtered_Collection_WHEN_more_than_one_userDefined_filter_passed_with_AND_logic()
+    {
+        // arrange
+        var manager = CreateFilteringManagerWithFilteringConfigurationUsing();
+        var data = Data.TestEntities;
+
+        var filters = new Filter<TestEntityFilteringEnum>[]
+        {
+            new(TestEntityFilteringEnum.ByComplexTypeValue, FilteringOperators.StartsWith, "Value2"),
+            new(TestEntityFilteringEnum.ByRelatedCollection, FilteringOperators.Contains, "Jack")
+        };
+
+        var filteringOptions = new FilteringOptions<TestEntityFilteringEnum>(filters, Logic.And);
+        var expected = new Guid[]
+        {
+            data[1].Id,
+        };
+
+        // act 
+        var result = manager.ApplyFiltering(data.AsQueryable(), filteringOptions);
+
+        // assert
+        var actual = result.Select(e => e.Id).ToArray();
+        actual.Should().BeEquivalentTo(expected);
+    }
+    
+    [Fact]
+    public void ApplyFiltering_Should_Return_Filtered_Collection_WHEN_more_than_one_userDefined_filter_passed_with_OR_logic()
+    {
+        // arrange
+        var manager = CreateFilteringManagerWithFilteringConfigurationUsing();
+        var data = Data.TestEntities;
+
+        var filters = new Filter<TestEntityFilteringEnum>[]
+        {
+            new(TestEntityFilteringEnum.ByComplexTypeValue, FilteringOperators.StartsWith, "Value2"),
+            new(TestEntityFilteringEnum.ByRelatedCollection, FilteringOperators.Contains, "Jack")
+        };
+
+        var filteringOptions = new FilteringOptions<TestEntityFilteringEnum>(filters, Logic.Or);
+        var expected = new Guid[]
+        {
+            data[0].Id,
+            data[1].Id,
+        };
+
+        // act 
+        var result = manager.ApplyFiltering(data.AsQueryable(), filteringOptions);
+
+        // assert
+        var actual = result.Select(e => e.Id).ToArray();
+        actual.Should().BeEquivalentTo(expected);
+    }
+    
+    [Fact]
+    public void ApplyFiltering_Should_Return_Filtered_Collection_WHEN_userDefined_and_built_filter_applied_with_AND_logic()
+    {
+        // arrange
+        var manager = CreateFilteringManagerWithFilteringConfigurationUsing();
+        var data = Data.TestEntities;
+
+        var filters = new Filter<TestEntityFilteringEnum>[]
+        {
+            new(TestEntityFilteringEnum.ByComplexTypeValue, FilteringOperators.StartsWith, "Value3"),
+            new(TestEntityFilteringEnum.ByLastName, FilteringOperators.StartsWith, "For")
+        };
+
+        var filteringOptions = new FilteringOptions<TestEntityFilteringEnum>(filters, Logic.And);
+        var expected = new Guid[]
+        {
+            data[2].Id,
+        };
+
+        // act 
+        var result = manager.ApplyFiltering(data.AsQueryable(), filteringOptions);
+
+        // assert
+        var actual = result.Select(e => e.Id).ToArray();
+        actual.Should().BeEquivalentTo(expected);
+    }
+    
+    [Fact]
+    public void ApplyFiltering_Should_Return_Filtered_Collection_WHEN_userDefined_and_built_filter_applied_with_OR_logic()
+    {
+        // arrange
+        var manager = CreateFilteringManagerWithFilteringConfigurationUsing();
+        var data = Data.TestEntities;
+
+        var filters = new Filter<TestEntityFilteringEnum>[]
+        {
+            new(TestEntityFilteringEnum.ByRelatedCollection, FilteringOperators.Contains, "Empty"),
+            new(TestEntityFilteringEnum.ByFirstName, FilteringOperators.Contains, "Jo")
+        };
+
+        var filteringOptions = new FilteringOptions<TestEntityFilteringEnum>(filters, Logic.Or);
+        var expected = new Guid[]
+        {
+            data[0].Id,
             data[2].Id,
         };
 
@@ -164,5 +327,16 @@ public class DefaultFilteringManagerTests
         scopeFactoryMock.CreateScope().Returns(scopeMock);
 
         return new DefaultFilteringManager<T>(scopeFactoryMock);
+    }
+    
+    private static DefaultFilteringManager<TestEntity> CreateFilteringManagerWithFilteringConfigurationUsing()
+    {
+        var scopeMock = Substitute.For<IServiceScope>();
+        var scopeFactoryMock = Substitute.For<IServiceScopeFactory>();
+
+        scopeFactoryMock.CreateScope().Returns(scopeMock);
+        scopeMock.ServiceProvider.GetService(typeof(IFilteringConfiguration<TestEntity, TestEntityFilteringEnum>)).Returns(new TestEntityFilteringConfiguration());
+
+        return new DefaultFilteringManager<TestEntity>(scopeFactoryMock);
     }
 }

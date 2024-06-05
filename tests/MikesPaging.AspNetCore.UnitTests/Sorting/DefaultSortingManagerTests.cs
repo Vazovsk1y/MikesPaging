@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using MikesPaging.AspNetCore.Common;
 using MikesPaging.AspNetCore.Common.Enums;
+using MikesPaging.AspNetCore.Common.Interfaces;
 using MikesPaging.AspNetCore.Exceptions;
 using MikesPaging.AspNetCore.Services;
 using MikesPaging.AspNetCore.UnitTests.Models;
@@ -80,6 +81,54 @@ public class DefaultSortingManagerTests
 
         actual.Should().BeEquivalentTo(expected);
     }
+    
+    [Fact]
+    public void ApplySorting_Should_Return_Sorted_In_Ascending_Order_Collection_WHEN_userDefined_sorting_option_applied_and_sort_direction_property_set_to_ASCENDING()
+    {
+        // arrange
+        var manager = CreateSortingManagerWithSortingConfigurationUsing();
+        var data = Data.TestEntities;
+        var expected = new Guid[]
+        {
+            data[1].Id,
+            data[2].Id,
+            data[0].Id
+        };
+
+        var sortingOptions = new SortingOptions<TestEntitySortingEnum>(SortingDirections.Ascending, TestEntitySortingEnum.ByRelatedCollectionCount);
+
+        // act 
+        var result = manager.ApplySorting(data.AsQueryable(), sortingOptions);
+
+        // assert
+        var actual = result.Select(e => e.Id).ToArray();
+
+        actual.Should().BeEquivalentTo(expected);
+    }
+    
+    [Fact]
+    public void ApplySorting_Should_Return_Sorted_In_Descending_Order_Collection_WHEN_userDefined_sorting_option_applied_and_sort_direction_property_set_to_DESCENDING()
+    {
+        // arrange
+        var manager = CreateSortingManagerWithSortingConfigurationUsing();
+        var data = Data.TestEntities;
+        var expected = new Guid[]
+        {
+            data[0].Id,
+            data[2].Id,
+            data[1].Id
+        };
+
+        var sortingOptions = new SortingOptions<TestEntitySortingEnum>(SortingDirections.Descending, TestEntitySortingEnum.ByRelatedCollectionCount);
+
+        // act 
+        var result = manager.ApplySorting(data.AsQueryable(), sortingOptions);
+
+        // assert
+        var actual = result.Select(e => e.Id).ToArray();
+
+        actual.Should().BeEquivalentTo(expected);
+    }
 
     [Theory]
     [MemberData(nameof(InvalidSortingOptions))]
@@ -105,5 +154,16 @@ public class DefaultSortingManagerTests
         scopeFactoryMock.CreateScope().Returns(scopeMock);
 
         return new DefaultSortingManager<T>(scopeFactoryMock);
+    }
+    
+    private static DefaultSortingManager<TestEntity> CreateSortingManagerWithSortingConfigurationUsing()
+    {
+        var scopeMock = Substitute.For<IServiceScope>();
+        var scopeFactoryMock = Substitute.For<IServiceScopeFactory>();
+
+        scopeFactoryMock.CreateScope().Returns(scopeMock);
+        scopeMock.ServiceProvider.GetService(typeof(ISortingConfiguration<TestEntity, TestEntitySortingEnum>)).Returns(new TestEntitySortingConfiguration());
+
+        return new DefaultSortingManager<TestEntity>(scopeFactoryMock);
     }
 }

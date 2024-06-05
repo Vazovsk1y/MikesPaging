@@ -6,11 +6,13 @@ namespace MikesPaging.AspNetCore.UnitTests.Enums;
 
 public class SortingEnumTests
 {
-    public static TheoryData<TestSortingEnum, TestSortingEnum, bool> SortingEnums { get; } = new TheoryData<TestSortingEnum, TestSortingEnum, bool>
+    public static TheoryData<TestSortingEnum?, TestSortingEnum?, bool> SortingEnums { get; } = new TheoryData<TestSortingEnum?, TestSortingEnum?, bool>
     {
         { new("propertyName", ["propertyName"]), new("propertyName", ["propertyName", "another"]), false },
         { new("propertyName", ["another", "propertyName"]), new("propertyName", ["Another", "propertyName"]), false },
         { new("propertyName", ["propertyName", "another"]), new("propertyName", ["Another", "propertyName"]), false },
+        { new("propertyName", ["propertyName", "another"]), null, false },
+        { null, new("propertyName", ["propertyName", "another"]), false },
 
         { new("propertyName", ["propertyName"]), new("propertyName", ["propertyName"]), true },
         { new("propertyName", ["propertyName", "another"]), new("propertyName", ["propertyName", "another"]), true },
@@ -87,9 +89,19 @@ public class SortingEnumTests
 
     [Theory]
     [MemberData(nameof(SortingEnums))]
-    public void Equals_Should_Return_Expected(TestSortingEnum testSortingEnum, TestSortingEnum testSortingEnum1, bool expected)
+    public void Equals_Should_Return_Expected(TestSortingEnum? testSortingEnum, TestSortingEnum? testSortingEnum1, bool expected)
     {
-        var result = testSortingEnum.Equals(testSortingEnum1);
+        var result = testSortingEnum?.Equals(testSortingEnum1) ?? false;
+
+        result.Should().Be(expected);
+    }
+    
+    [Theory]
+    [MemberData(nameof(SortingEnums))]
+    [InlineData(null, null, true)]
+    public void EqualsOperator_Should_Return_Expected(TestSortingEnum? testSortingEnum, TestSortingEnum? testSortingEnum1, bool expected)
+    {
+        var result = testSortingEnum == testSortingEnum1;
 
         result.Should().Be(expected);
     }

@@ -7,7 +7,7 @@ namespace MikesPaging.AspNetCore.UnitTests.Enums;
 
 public class FilteringEnumTests
 {
-    public static TheoryData<TestFilteringEnum, TestFilteringEnum, bool> FilteringEnums { get; } = new ()
+    public static TheoryData<TestFilteringEnum?, TestFilteringEnum?, bool> FilteringEnums { get; } = new ()
     {
         // not equal
         { new("propertyName", ["propertyName"]), new("propertyName", ["propertyName", "another"]), false },
@@ -17,6 +17,8 @@ public class FilteringEnumTests
                 inapplicableOperators: [ FilteringOperators.NotEqual ]), 
             new("property", ["propertyName"], 
                 inapplicableOperators: [ FilteringOperators.GreaterThanOrEqual ]), false },
+        { new("propertyName", ["propertyName", "another"]), null, false },
+        { null, new("propertyName", ["propertyName", "another"]), false },
         
         // equal
         { new("propertyName", ["propertyName"], 
@@ -123,9 +125,19 @@ public class FilteringEnumTests
 
     [Theory]
     [MemberData(nameof(FilteringEnums))]
-    public void Equals_Should_Return_Expected(TestFilteringEnum testFilteringEnum, TestFilteringEnum testFilteringEnum1, bool expected)
+    public void Equals_Should_Return_Expected(TestFilteringEnum? testFilteringEnum, TestFilteringEnum? testFilteringEnum1, bool expected)
     {
-        var result = testFilteringEnum.Equals(testFilteringEnum1);
+        var result = testFilteringEnum?.Equals(testFilteringEnum1) ?? false;
+
+        result.Should().Be(expected);
+    }
+    
+    [Theory]
+    [MemberData(nameof(FilteringEnums))]
+    [InlineData(null, null, true)]
+    public void EqualsOperator_Should_Return_Expected(TestFilteringEnum? testFilteringEnum, TestFilteringEnum? testFilteringEnum1, bool expected)
+    {
+        var result = testFilteringEnum == testFilteringEnum1;
 
         result.Should().Be(expected);
     }

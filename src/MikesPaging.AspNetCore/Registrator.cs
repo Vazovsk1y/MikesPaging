@@ -8,7 +8,6 @@ using System.Reflection;
 
 namespace MikesPaging.AspNetCore;
 
-// TODO: Remove 'ASP.NET Core' tag from package tags.
 public static class Registrator
 {
     public static IServiceCollection AddPaging(this IServiceCollection services)

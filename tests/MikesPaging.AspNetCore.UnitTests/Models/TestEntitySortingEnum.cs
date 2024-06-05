@@ -14,6 +14,8 @@ public class TestEntitySortingEnum : SortingEnum
 
     public static readonly TestEntitySortingEnum ByAgeButWithInvalidPropertyName = new("invalid", ["invalid"]);
 
+    public static readonly TestEntitySortingEnum ByRelatedCollectionCount = new("RelatedCollectionCount", [ "RelatedCollectionCount" ]);
+
     private TestEntitySortingEnum(string propertyName, IReadOnlyCollection<string> allowedNames) : base(propertyName, allowedNames)
     {
     }

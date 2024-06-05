@@ -51,7 +51,8 @@ public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory servic
             andExpression = andExpression is null ? filterExpression : Expression.AndAlso(andExpression, filterExpression);
         }
 
-        return Expression.Lambda<Func<TSource, bool>>(andExpression!, parameter);
+        ArgumentNullException.ThrowIfNull(andExpression);
+        return Expression.Lambda<Func<TSource, bool>>(andExpression, parameter);
     }
 
     private Expression<Func<TSource, bool>> GetOrFilterExpression<T>(IReadOnlyCollection<Filter<T>> filters)
@@ -66,7 +67,8 @@ public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory servic
             orExpression = orExpression is null ? filterExpression : Expression.OrElse(orExpression, filterExpression);
         }
 
-        return Expression.Lambda<Func<TSource, bool>>(orExpression!, parameter);
+        ArgumentNullException.ThrowIfNull(orExpression);
+        return Expression.Lambda<Func<TSource, bool>>(orExpression, parameter);
     }
 
     private Expression BuildFilterExpression<T>(Filter<T> filter, ParameterExpression parameter)
@@ -83,7 +85,7 @@ public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory servic
             {
                 var filterExpression = configuredFilter.Invoke(filter.Value);
                 ArgumentNullException.ThrowIfNull(filterExpression);
-                return filterExpression;
+                return Expression.Invoke(filterExpression, parameter);
             }
         }
 
@@ -126,7 +128,7 @@ public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory servic
         where T : FilteringEnum
     {
         FilteringException.ThrowIf(filteringOptions.Filters is null || filteringOptions.Filters.Count == 0, Errors.ValueCannotBeNullOrEmpty(nameof(filteringOptions.Filters)));
-        FilteringException.ThrowIf(filteringOptions.Filters.Distinct().Count() != filteringOptions.Filters!.Count, Errors.Filtering.FiltersCollectionCannotContainDuplicates);
+        FilteringException.ThrowIf(filteringOptions.Filters.Distinct().Count() != filteringOptions.Filters.Count, Errors.Filtering.FiltersCollectionCannotContainDuplicates);
         FilteringException.ThrowIf(filteringOptions.Filters.Any(e => e is null), Errors.ValueCannotBeNull(nameof(Filter<T>)));
         FilteringException.ThrowIf(filteringOptions.Filters.Any(e => e.FilterBy is null), Errors.ValueCannotBeNull(nameof(Filter<T>.FilterBy)));
     }

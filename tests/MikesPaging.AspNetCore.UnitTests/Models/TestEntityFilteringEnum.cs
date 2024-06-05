@@ -18,6 +18,12 @@ public class TestEntityFilteringEnum : FilteringEnum
 
     public static readonly TestEntityFilteringEnum ByAgeButWithInvalidPropertyName = new("invalid", ["invalid"]);
 
+    public static readonly TestEntityFilteringEnum ByComplexTypeTitle = new("Title", [ "Title" ]);
+
+    public static readonly TestEntityFilteringEnum ByComplexTypeValue = new("Value", [ "Value" ]);
+
+    public static readonly TestEntityFilteringEnum ByRelatedCollection = new(nameof(TestEntity.RelatedCollection), [nameof(TestEntity.RelatedCollection) ]);
+
     private TestEntityFilteringEnum(
         string propertyName, 
         IReadOnlyCollection<string> allowedNames, 

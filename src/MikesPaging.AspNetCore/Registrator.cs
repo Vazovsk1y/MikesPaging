@@ -10,6 +10,7 @@ namespace MikesPaging.AspNetCore;
 
 // TODO: Remove 'ASP.NET Core' tag from package tags.
 // TODO: Override == and != in FilteringEnum.cs and SortingEnum.cs.
+// TODO: Implement Equals filtering operator.
 public static class Registrator
 {
     public static IServiceCollection AddPaging(this IServiceCollection services)

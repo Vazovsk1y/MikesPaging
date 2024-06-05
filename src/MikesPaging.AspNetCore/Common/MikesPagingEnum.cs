@@ -17,10 +17,6 @@ public abstract class MikesPagingEnum
     /// </summary>
     public IReadOnlyCollection<string> AllowedNames { get; }
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    private MikesPagingEnum() { }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
     /// <summary>
     /// Initializes a new instance of the <see cref="MikesPagingEnum"/> class with the specified parameters.
     /// </summary>
@@ -52,6 +48,19 @@ public abstract class MikesPagingEnum
 
         return obj is MikesPagingEnum @enum && GetEqualityComponents().SequenceEqual(@enum.GetEqualityComponents());
     }
+
+    public static bool operator ==(MikesPagingEnum? mikesPagingEnum1, MikesPagingEnum? mikesPagingEnum2)
+    {
+        if (mikesPagingEnum1 is null && mikesPagingEnum2 is null)
+        {
+            return true;
+        }
+        
+        return mikesPagingEnum1?.GetEqualityComponents().SequenceEqual(mikesPagingEnum2?.GetEqualityComponents() ?? []) ?? false;
+    }
+
+    public static bool operator !=(MikesPagingEnum? mikesPagingEnum1, MikesPagingEnum? mikesPagingEnum2) =>
+        !(mikesPagingEnum1 == mikesPagingEnum2);
 
     /// <summary>
     /// Serves as the default hash function.

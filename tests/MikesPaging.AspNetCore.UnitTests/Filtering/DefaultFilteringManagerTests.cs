@@ -96,13 +96,13 @@ public class DefaultFilteringManagerTests
         var filters = new Filter<TestEntityFilteringEnum>[]
         {
             new(TestEntityFilteringEnum.ByAge, FilteringOperators.LessThanOrEqual, "1"),
-            new(TestEntityFilteringEnum.ByFirstName, FilteringOperators.Contains, "Mi")
+            new(TestEntityFilteringEnum.ByIQ, FilteringOperators.NotEqual, null)
         };
 
         var filteringOptions = new FilteringOptions<TestEntityFilteringEnum>(filters, Logic.Or);
         var expected = new Guid[]
         {
-            data[1].Id,
+            data[0].Id,
             data[2].Id,
         };
 
@@ -123,14 +123,14 @@ public class DefaultFilteringManagerTests
 
         var filters = new Filter<TestEntityFilteringEnum>[]
         {
-            new(TestEntityFilteringEnum.ByAge, FilteringOperators.LessThanOrEqual, "1"),
-            new(TestEntityFilteringEnum.ByFirstName, FilteringOperators.Contains, "r")
+            new(TestEntityFilteringEnum.ByAge, FilteringOperators.LessThanOrEqual, "3"),
+            new(TestEntityFilteringEnum.ByIQ, FilteringOperators.Equal, null)
         };
 
         var filteringOptions = new FilteringOptions<TestEntityFilteringEnum>(filters, Logic.And);
         var expected = new Guid[]
         {
-            data[2].Id,
+            data[1].Id,
         };
 
         // act 

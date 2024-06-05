@@ -28,6 +28,8 @@ public sealed class UsersFilteringProperties : FilteringEnum
 
     public static readonly UsersFilteringProperties ByAccounts = new(nameof(User.Accounts), [nameof(User.Accounts), "user_accounts"],
         inapplicableOperators: [
+            FilteringOperators.Equal,
+            FilteringOperators.NotEqual,
             FilteringOperators.GreaterThanOrEqual,
             FilteringOperators.GreaterThan,
             FilteringOperators.LessThan,

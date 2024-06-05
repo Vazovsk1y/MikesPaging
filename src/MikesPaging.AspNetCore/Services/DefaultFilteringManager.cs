@@ -103,6 +103,8 @@ public sealed class DefaultFilteringManager<TSource>(IServiceScopeFactory servic
 
         switch (filter.Operator)
         {
+            case FilteringOperators.Equal:
+                return Expression.Equal(convertedProperty, convertedConstant);
             case FilteringOperators.NotEqual:
                 return Expression.NotEqual(convertedProperty, convertedConstant);
             case FilteringOperators.LessThanOrEqual:

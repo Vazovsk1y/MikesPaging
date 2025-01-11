@@ -17,20 +17,24 @@ jobs:
       - name: Extract release notes
         id: extract_notes
         run: |
-          # Получаем текущий тег без префикса 'v'
           CURRENT_TAG="${GITHUB_REF#refs/tags/v}"
-          # Проверяем, есть ли файл CHANGELOG.md
           if [[ ! -f CHANGELOG.md ]]; then
             echo "No information provided." > release_notes.md
             exit 0
           fi
-          
-          # Ищем секцию для текущего тега
-          awk "/^# ${CURRENT_TAG}/,/^# /" CHANGELOG.md | sed '$d' > release_notes.md
-          
-          # Если файл пустой, то добавляем сообщение "No information provided."
-          if [[ ! -s release_notes.md ]]; then
+
+          # Найти секцию и извлечь изменения
+          START_LINE=$(grep -n "^# ${CURRENT_TAG}" CHANGELOG.md | cut -d':' -f1)
+          END_LINE=$(grep -n -m1 "^# " CHANGELOG.md | grep -A1 "^${START_LINE}:" | tail -1 | cut -d':' -f1)
+
+          if [[ -z "$START_LINE" ]]; then
             echo "No information provided." > release_notes.md
+          else
+            if [[ -z "$END_LINE" ]]; then
+              sed -n "${START_LINE},\$p" CHANGELOG.md > release_notes.md
+            else
+              sed -n "${START_LINE},$((END_LINE-1))p" CHANGELOG.md > release_notes.md
+            fi
           fi
 
       - name: Debug Release Notes

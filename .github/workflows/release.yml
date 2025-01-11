@@ -14,11 +14,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Debug Release Notes
-        run: |
-          echo "Generated release notes:"
-          cat release_notes.md
-
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:

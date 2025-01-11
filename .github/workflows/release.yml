@@ -13,8 +13,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Extract release notes
+        id: extract_notes
+        run: |
+          # Получаем текущий тег без префикса 'v'
+          CURRENT_TAG="${GITHUB_REF#refs/tags/v}"
+          # Проверяем, есть ли файл CHANGELOG.md
+          if [[ ! -f CHANGELOG.md ]]; then
+            echo "No information provided." > release_notes.md
+            exit 0
+          fi
+          
+          # Ищем секцию для текущего тега
+          awk "/^# ${CURRENT_TAG}/,/^# /" CHANGELOG.md | sed '$d' > release_notes.md
+          
+          # Если файл пустой, то добавляем сообщение "No information provided."
+          if [[ ! -s release_notes.md ]]; then
+            echo "No information provided." > release_notes.md
+          fi
+
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          body_path: CHANGELOG.txt
+          body: ${{ steps.extract_notes.outputs.body }}

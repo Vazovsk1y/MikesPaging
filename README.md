@@ -1,4 +1,6 @@
-# MikesPaging.AspNetCore
+# MikesPaging.AspNetCore [DEPRECATED]
+
+Use instead https://github.com/Vazovsk1y/MikesSifter
 
 MikesPaging.AspNetCore is a simple library for implementing paging, sorting, and filtering functionality in your ASP.NET applications.
 

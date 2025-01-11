@@ -14,29 +14,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Extract release notes
-        id: extract_notes
-        run: |
-          CURRENT_TAG="${GITHUB_REF#refs/tags/v}"
-          if [[ ! -f CHANGELOG.md ]]; then
-            echo "No information provided." > release_notes.md
-            exit 0
-          fi
-
-          # Найти секцию и извлечь изменения
-          START_LINE=$(grep -n "^# ${CURRENT_TAG}" CHANGELOG.md | cut -d':' -f1)
-          END_LINE=$(grep -n -m1 "^# " CHANGELOG.md | grep -A1 "^${START_LINE}:" | tail -1 | cut -d':' -f1)
-
-          if [[ -z "$START_LINE" ]]; then
-            echo "No information provided." > release_notes.md
-          else
-            if [[ -z "$END_LINE" ]]; then
-              sed -n "${START_LINE},\$p" CHANGELOG.md > release_notes.md
-            else
-              sed -n "${START_LINE},$((END_LINE-1))p" CHANGELOG.md > release_notes.md
-            fi
-          fi
-
       - name: Debug Release Notes
         run: |
           echo "Generated release notes:"
@@ -46,4 +23,3 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          body_path: release_notes.md

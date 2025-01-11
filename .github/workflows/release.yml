@@ -33,8 +33,13 @@ jobs:
             echo "No information provided." > release_notes.md
           fi
 
-      - name: Release
+      - name: Debug Release Notes
+        run: |
+          echo "Generated release notes:"
+          cat release_notes.md
+
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          body: ${{ steps.extract_notes.outputs.body }}
+          body_path: release_notes.md
